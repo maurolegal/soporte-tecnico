@@ -1207,6 +1207,16 @@
         // Variables globales
         let currentUser = null;
 
+        // Función para cambiar entre tabs
+        window.nextTab = function(tabId) {
+            // Obtener el elemento tab
+            const nextTab = document.querySelector(`button[data-bs-target="#${tabId}"]`);
+            // Crear una instancia de Tab de Bootstrap
+            const tab = new bootstrap.Tab(nextTab);
+            // Activar el tab
+            tab.show();
+        };
+
         // Inicializar la página
         document.addEventListener('DOMContentLoaded', async function() {
             try {
@@ -1285,7 +1295,7 @@
                         .select()
                         .single();
                     clientId = updatedClient.id;
-                } else {
+                    } else {
                     // Crear nuevo cliente
                     const { data: newClient } = await supabase
                         .from('clients')
@@ -1387,11 +1397,11 @@
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 <button class="btn btn-danger btn-custom" onclick="confirmDelete('${order.id}')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                        <i class="fas fa-trash"></i>
+                    </button>
                             </div>
-                        </td>
-                    `;
+                </td>
+            `;
                     tbody.appendChild(tr);
                 });
             } catch (error) {
