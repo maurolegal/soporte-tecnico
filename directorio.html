@@ -384,529 +384,391 @@
         </div>
     </div>
 
-    <script>
-    // Función para crear alerta de soporte
-    function createSupportAlert() {
-        // Establecer fecha mínima como hoy
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('alertDate').min = today;
-        document.getElementById('alertDate').value = today;
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script type="module">
+        import { clientsApi } from './js/supabase.js';
         
-        const modal = new bootstrap.Modal(document.getElementById('createAlertModal'));
-        modal.show();
-    }
+        // Variables globales
+        let clients = [];
 
-    // Función para guardar alerta
-    function saveAlert() {
-        const client = document.getElementById('alertClient').value;
-        const equipment = document.getElementById('alertEquipment').value;
-        const date = document.getElementById('alertDate').value;
-        const type = document.getElementById('alertType').value;
-        const description = document.getElementById('alertDescription').value;
-        const priority = document.getElementById('alertPriority').value;
+        // Cargar clientes al iniciar
+        async function loadClients() {
+            try {
+                const { data, error } = await clientsApi.getAll();
+                if (error) throw error;
+                
+                clients = data;
+                const tbody = document.querySelector('#clientsTable tbody');
+                tbody.innerHTML = '';
+                
+                clients.forEach(client => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>#${client.id.slice(0, 8)}</td>
+                        <td>${client.name}</td>
+                        <td>${client.phone}</td>
+                        <td>${client.email || '-'}</td>
+                        <td>${client.address || '-'}</td>
+                        <td><span class="status-badge status-activo">Activo</span></td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-info btn-custom" onclick="window.viewClient('${client.id}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-warning btn-custom" onclick="window.editClient('${client.id}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-danger btn-custom" onclick="window.deleteClient('${client.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <button class="btn btn-primary btn-custom" onclick="window.createClientReminder('${client.id}', '${client.name}')">
+                                    <i class="fas fa-bell"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
 
-        // Aquí iría la lógica para guardar la alerta
-        addAlertToList({
-            client,
-            equipment,
-            date,
-            type,
-            description,
-            priority
-        });
+                // Actualizar contadores
+                updateClientCounters();
+            } catch (error) {
+                console.error('Error al cargar clientes:', error);
+                showNotification('Error al cargar los clientes: ' + error.message, 'error');
+            }
+        }
 
-        const modal = bootstrap.Modal.getInstance(document.getElementById('createAlertModal'));
-        modal.hide();
-    }
+        // Actualizar contadores de clientes
+        function updateClientCounters() {
+            const totalClients = clients.length;
+            const activeClients = clients.filter(c => c.status !== 'inactive').length;
+            const recentClients = clients.filter(c => {
+                const createdAt = new Date(c.created_at);
+                const thirtyDaysAgo = new Date();
+                thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                return createdAt >= thirtyDaysAgo;
+            }).length;
+            const inactiveClients = clients.filter(c => c.status === 'inactive').length;
 
-    // Función para agregar alerta a la lista
-    function addAlertToList(alert) {
-        const container = document.getElementById('supportAlertsList');
-        const alertElement = document.createElement('div');
-        alertElement.className = `list-group-item list-group-item-action ${getPriorityClass(alert.priority)}`;
-        alertElement.innerHTML = `
-            <div class="d-flex w-100 justify-content-between">
-                <h6 class="mb-1">${alert.client} - ${alert.equipment}</h6>
-                <small>${formatDate(alert.date)}</small>
-            </div>
-            <p class="mb-1">${alert.description}</p>
-            <small>
-                <span class="badge bg-info">${alert.type}</span>
-                <span class="badge ${getPriorityBadge(alert.priority)}">${alert.priority}</span>
-            </small>
-            <button class="btn btn-sm btn-danger float-end" onclick="this.parentElement.remove()">
-                <i class="fas fa-trash"></i>
-            </button>
-        `;
-        container.prepend(alertElement);
-    }
+            document.querySelector('.card:nth-child(1) h3').textContent = totalClients;
+            document.querySelector('.card:nth-child(2) h3').textContent = activeClients;
+            document.querySelector('.card:nth-child(3) h3').textContent = recentClients;
+            document.querySelector('.card:nth-child(4) h3').textContent = inactiveClients;
+        }
 
-    // Función para obtener clase según prioridad
-    function getPriorityClass(priority) {
-        const classes = {
-            'baja': 'list-group-item-light',
-            'media': 'list-group-item-warning',
-            'alta': 'list-group-item-danger',
-            'urgente': 'list-group-item-danger border-danger'
-        };
-        return classes[priority] || 'list-group-item-light';
-    }
-
-    // Función para obtener badge según prioridad
-    function getPriorityBadge(priority) {
-        const badges = {
-            'baja': 'bg-secondary',
-            'media': 'bg-warning',
-            'alta': 'bg-danger',
-            'urgente': 'bg-danger'
-        };
-        return badges[priority] || 'bg-secondary';
-    }
-
-    // Función para formatear fecha
-    function formatDate(date) {
-        return new Date(date).toLocaleDateString('es-ES', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-        });
-    }
-
-    // Función para crear recordatorio de cliente
-    function createClientReminder(clientId, clientName) {
-        // Establecer fecha mínima como hoy
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('reminderDate').min = today;
-        document.getElementById('reminderDate').value = today;
-        
-        // Establecer datos del cliente
-        document.getElementById('reminderClientId').value = clientId;
-        document.getElementById('reminderClientName').value = clientName;
-        
-        // Mostrar modal
-        const modal = new bootstrap.Modal(document.getElementById('clientReminderModal'));
-        modal.show();
-    }
-
-    // Función para guardar recordatorio
-    function saveClientReminder() {
-        const reminder = {
-            clientId: document.getElementById('reminderClientId').value,
-            clientName: document.getElementById('reminderClientName').value,
-            date: document.getElementById('reminderDate').value,
-            serviceType: document.getElementById('reminderServiceType').value,
-            priority: document.getElementById('reminderPriority').value,
-            notification: document.getElementById('reminderNotification').value,
-            notes: document.getElementById('reminderNotes').value,
-            status: 'pendiente'
-        };
-
-        // Agregar a la lista de alertas
-        addReminderToAlertsList(reminder);
-
-        // Cerrar modal
-        const modal = bootstrap.Modal.getInstance(document.getElementById('clientReminderModal'));
-        modal.hide();
-
-        // Mostrar notificación de éxito
-        showNotification('Recordatorio creado exitosamente', 'success');
-    }
-
-    // Función para agregar recordatorio a la lista de alertas
-    function addReminderToAlertsList(reminder) {
-        const container = document.getElementById('supportAlertsList');
-        const reminderElement = document.createElement('div');
-        reminderElement.className = `list-group-item list-group-item-action ${getPriorityClass(reminder.priority)}`;
-        
-        const notificationDate = calculateNotificationDate(reminder.date, reminder.notification);
-        
-        reminderElement.innerHTML = `
-            <div class="d-flex w-100 justify-content-between">
-                <h6 class="mb-1">${reminder.clientName}</h6>
-                <small>Servicio: ${formatDate(reminder.date)}</small>
-            </div>
-            <p class="mb-1">${reminder.notes || 'Sin notas adicionales'}</p>
-            <small>
-                <span class="badge bg-info">${formatServiceType(reminder.serviceType)}</span>
-                <span class="badge ${getPriorityBadge(reminder.priority)}">${reminder.priority}</span>
-                <span class="badge bg-secondary">Notificar: ${formatDate(notificationDate)}</span>
-            </small>
-            <div class="mt-2">
-                <button class="btn btn-sm btn-success" onclick="markReminderComplete(this)">
-                    <i class="fas fa-check"></i>
-                </button>
-                <button class="btn btn-sm btn-danger" onclick="this.parentElement.parentElement.remove()">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        `;
-        
-        container.prepend(reminderElement);
-    }
-
-    // Función para calcular fecha de notificación
-    function calculateNotificationDate(serviceDate, daysBeforeNotification) {
-        const date = new Date(serviceDate);
-        date.setDate(date.getDate() - parseInt(daysBeforeNotification));
-        return date;
-    }
-
-    // Función para formatear tipo de servicio
-    function formatServiceType(type) {
-        const types = {
-            'mantenimiento_preventivo': 'Mant. Preventivo',
-            'mantenimiento_correctivo': 'Mant. Correctivo',
-            'actualizacion': 'Actualización',
-            'revision': 'Revisión',
-            'otro': 'Otro'
-        };
-        return types[type] || type;
-    }
-
-    // Función para marcar recordatorio como completado
-    function markReminderComplete(button) {
-        const reminderElement = button.parentElement.parentElement;
-        reminderElement.classList.add('list-group-item-success');
-        button.disabled = true;
-        button.innerHTML = '<i class="fas fa-check-double"></i>';
-    }
-
-    // Función para mostrar notificaciones
-    function showNotification(message, type = 'info') {
-        // Aquí puedes implementar tu sistema de notificaciones preferido
-        alert(message); // Implementación básica
-    }
-
-    // Gestión de Clientes
-    let clients = JSON.parse(localStorage.getItem('clients')) || [];
-
-    // Cargar clientes al iniciar
-    function loadClients() {
-        const tbody = document.querySelector('#clientsTable tbody');
-        tbody.innerHTML = '';
-        
-        clients.forEach(client => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>#${client.id}</td>
-                <td>${client.name}</td>
-                <td>${client.phone}</td>
-                <td>${client.email}</td>
-                <td>${client.address}</td>
-                <td><span class="status-badge status-${client.status.toLowerCase()}">${client.status}</span></td>
-                <td>
-                    <div class="btn-group btn-group-sm">
-                        <button class="btn btn-info btn-custom" onclick="viewClient('${client.id}')">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="btn btn-warning btn-custom" onclick="editClient('${client.id}')">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-danger btn-custom" onclick="deleteClient('${client.id}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                        <button class="btn btn-primary btn-custom" onclick="createClientReminder('${client.id}', '${client.name}')">
-                            <i class="fas fa-bell"></i>
-                        </button>
-                    </div>
-                </td>
+        // Agregar nuevo cliente
+        window.addNewClient = function() {
+            const modal = document.getElementById('clientModal');
+            modal.querySelector('.modal-content').innerHTML = `
+                <div class="modal-header">
+                    <h5 class="modal-title">Nuevo Cliente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="clientForm">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="clientName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Teléfono</label>
+                            <input type="tel" class="form-control" id="clientPhone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Correo</label>
+                            <input type="email" class="form-control" id="clientEmail">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Dirección</label>
+                            <input type="text" class="form-control" id="clientAddress">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="window.saveNewClient()">Guardar</button>
+                </div>
             `;
-            tbody.appendChild(row);
-        });
-    }
-
-    // Agregar nuevo cliente
-    function addNewClient() {
-        const modal = document.getElementById('clientModal');
-        modal.querySelector('.modal-content').innerHTML = `
-            <div class="modal-header">
-                <h5 class="modal-title">Nuevo Cliente</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="clientForm">
-                    <div class="mb-3">
-                        <label class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="clientName" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Teléfono</label>
-                        <input type="tel" class="form-control" id="clientPhone" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Correo</label>
-                        <input type="email" class="form-control" id="clientEmail" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Dirección</label>
-                        <input type="text" class="form-control" id="clientAddress" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Estado</label>
-                        <select class="form-select" id="clientStatus">
-                            <option value="Activo">Activo</option>
-                            <option value="Inactivo">Inactivo</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="saveNewClient()">Guardar</button>
-            </div>
-        `;
-        
-        const modalInstance = new bootstrap.Modal(modal);
-        modalInstance.show();
-    }
-
-    // Guardar nuevo cliente
-    function saveNewClient() {
-        const form = document.getElementById('clientForm');
-        if (!form.checkValidity()) {
-            form.reportValidity();
-            return;
-        }
-
-        const newClient = {
-            id: 'CL' + (clients.length + 1).toString().padStart(3, '0'),
-            name: document.getElementById('clientName').value,
-            phone: document.getElementById('clientPhone').value,
-            email: document.getElementById('clientEmail').value,
-            address: document.getElementById('clientAddress').value,
-            status: document.getElementById('clientStatus').value
+            
+            const modalInstance = new bootstrap.Modal(modal);
+            modalInstance.show();
         };
 
-        clients.push(newClient);
-        localStorage.setItem('clients', JSON.stringify(clients));
-        loadClients();
+        // Guardar nuevo cliente
+        window.saveNewClient = async function() {
+            const form = document.getElementById('clientForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
 
-        const modal = bootstrap.Modal.getInstance(document.getElementById('clientModal'));
-        modal.hide();
-        showNotification('Cliente agregado exitosamente', 'success');
-    }
-
-    // Ver cliente
-    function viewClient(clientId) {
-        const client = clients.find(c => c.id === clientId);
-        if (!client) return;
-
-        const modal = document.getElementById('clientModal');
-        modal.querySelector('.modal-content').innerHTML = `
-            <div class="modal-header">
-                <h5 class="modal-title">Detalles del Cliente</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row mb-3">
-                    <div class="col-4"><strong>ID:</strong></div>
-                    <div class="col-8">#${client.id}</div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-4"><strong>Nombre:</strong></div>
-                    <div class="col-8">${client.name}</div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-4"><strong>Teléfono:</strong></div>
-                    <div class="col-8">${client.phone}</div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-4"><strong>Correo:</strong></div>
-                    <div class="col-8">${client.email}</div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-4"><strong>Dirección:</strong></div>
-                    <div class="col-8">${client.address}</div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-4"><strong>Estado:</strong></div>
-                    <div class="col-8">
-                        <span class="status-badge status-${client.status.toLowerCase()}">${client.status}</span>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            </div>
-        `;
-        
-        const modalInstance = new bootstrap.Modal(modal);
-        modalInstance.show();
-    }
-
-    // Editar cliente
-    function editClient(clientId) {
-        const client = clients.find(c => c.id === clientId);
-        if (!client) return;
-
-        const modal = document.getElementById('clientModal');
-        modal.querySelector('.modal-content').innerHTML = `
-            <div class="modal-header">
-                <h5 class="modal-title">Editar Cliente</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="clientForm">
-                    <input type="hidden" id="clientId" value="${client.id}">
-                    <div class="mb-3">
-                        <label class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="clientName" value="${client.name}" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Teléfono</label>
-                        <input type="tel" class="form-control" id="clientPhone" value="${client.phone}" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Correo</label>
-                        <input type="email" class="form-control" id="clientEmail" value="${client.email}" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Dirección</label>
-                        <input type="text" class="form-control" id="clientAddress" value="${client.address}" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Estado</label>
-                        <select class="form-select" id="clientStatus">
-                            <option value="Activo" ${client.status === 'Activo' ? 'selected' : ''}>Activo</option>
-                            <option value="Inactivo" ${client.status === 'Inactivo' ? 'selected' : ''}>Inactivo</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="saveEditedClient()">Guardar Cambios</button>
-            </div>
-        `;
-        
-        const modalInstance = new bootstrap.Modal(modal);
-        modalInstance.show();
-    }
-
-    // Guardar cliente editado
-    function saveEditedClient() {
-        const form = document.getElementById('clientForm');
-        if (!form.checkValidity()) {
-            form.reportValidity();
-            return;
-        }
-
-        const clientId = document.getElementById('clientId').value;
-        const clientIndex = clients.findIndex(c => c.id === clientId);
-
-        if (clientIndex !== -1) {
-            clients[clientIndex] = {
-                id: clientId,
+            const newClient = {
                 name: document.getElementById('clientName').value,
                 phone: document.getElementById('clientPhone').value,
-                email: document.getElementById('clientEmail').value,
-                address: document.getElementById('clientAddress').value,
-                status: document.getElementById('clientStatus').value
+                email: document.getElementById('clientEmail').value || null,
+                address: document.getElementById('clientAddress').value || null
             };
 
-            localStorage.setItem('clients', JSON.stringify(clients));
-            loadClients();
+            try {
+                const { data, error } = await clientsApi.create(newClient);
+                if (error) throw error;
 
-            const modal = bootstrap.Modal.getInstance(document.getElementById('clientModal'));
-            modal.hide();
-            showNotification('Cliente actualizado exitosamente', 'success');
-        }
-    }
-
-    // Eliminar cliente
-    function deleteClient(clientId) {
-        if (confirm('¿Está seguro de que desea eliminar este cliente?')) {
-            clients = clients.filter(c => c.id !== clientId);
-            localStorage.setItem('clients', JSON.stringify(clients));
-            loadClients();
-            showNotification('Cliente eliminado exitosamente', 'success');
-        }
-    }
-
-    // Búsqueda de clientes
-    function searchClients() {
-        const searchTerm = document.getElementById('searchClient').value.toLowerCase();
-        const searchName = document.getElementById('searchName').checked;
-        const searchPhone = document.getElementById('searchPhone').checked;
-        const searchEmail = document.getElementById('searchEmail').checked;
-
-        const tbody = document.querySelector('#clientsTable tbody');
-        tbody.innerHTML = '';
-
-        const filteredClients = clients.filter(client => {
-            return (searchName && client.name.toLowerCase().includes(searchTerm)) ||
-                   (searchPhone && client.phone.toLowerCase().includes(searchTerm)) ||
-                   (searchEmail && client.email.toLowerCase().includes(searchTerm));
-        });
-
-        filteredClients.forEach(client => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>#${client.id}</td>
-                <td>${client.name}</td>
-                <td>${client.phone}</td>
-                <td>${client.email}</td>
-                <td>${client.address}</td>
-                <td><span class="status-badge status-${client.status.toLowerCase()}">${client.status}</span></td>
-                <td>
-                    <div class="btn-group btn-group-sm">
-                        <button class="btn btn-info btn-custom" onclick="viewClient('${client.id}')">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="btn btn-warning btn-custom" onclick="editClient('${client.id}')">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-danger btn-custom" onclick="deleteClient('${client.id}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                        <button class="btn btn-primary btn-custom" onclick="createClientReminder('${client.id}', '${client.name}')">
-                            <i class="fas fa-bell"></i>
-                        </button>
-                    </div>
-                </td>
-            `;
-            tbody.appendChild(row);
-        });
-    }
-
-    // Función para manejar la navegación activa
-    function setActiveNavItem() {
-        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.classList.remove('active');
-        });
-        
-        const pageToNav = {
-            'index.html': 'nav-dashboard',
-            'soporte.html': 'nav-soporte',
-            'cotizaciones.html': 'nav-cotizaciones',
-            'facturas.html': 'nav-facturas',
-            'inventario.html': 'nav-inventario',
-            'directorio.html': 'nav-directorio',
-            'ajustes.html': 'nav-ajustes'
+                await loadClients();
+                const modal = bootstrap.Modal.getInstance(document.getElementById('clientModal'));
+                modal.hide();
+                showNotification('Cliente agregado exitosamente', 'success');
+            } catch (error) {
+                console.error('Error al crear cliente:', error);
+                showNotification('Error al crear el cliente: ' + error.message, 'error');
+            }
         };
-        
-        const navId = pageToNav[currentPage];
-        if (navId) {
-        const activeLink = document.getElementById(navId);
-        if (activeLink) {
-            activeLink.classList.add('active');
+
+        // Ver cliente
+        window.viewClient = async function(clientId) {
+            try {
+                const { data: client, error } = await clientsApi.getById(clientId);
+                if (error) throw error;
+                if (!client) {
+                    showNotification('Cliente no encontrado', 'error');
+                    return;
+                }
+
+                const modal = document.getElementById('clientModal');
+                modal.querySelector('.modal-content').innerHTML = `
+                    <div class="modal-header">
+                        <h5 class="modal-title">Detalles del Cliente</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-3">
+                            <div class="col-4"><strong>ID:</strong></div>
+                            <div class="col-8">#${client.id.slice(0, 8)}</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-4"><strong>Nombre:</strong></div>
+                            <div class="col-8">${client.name}</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-4"><strong>Teléfono:</strong></div>
+                            <div class="col-8">${client.phone}</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-4"><strong>Correo:</strong></div>
+                            <div class="col-8">${client.email || '-'}</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-4"><strong>Dirección:</strong></div>
+                            <div class="col-8">${client.address || '-'}</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-4"><strong>Fecha de Registro:</strong></div>
+                            <div class="col-8">${new Date(client.created_at).toLocaleString()}</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                `;
+                
+                const modalInstance = new bootstrap.Modal(modal);
+                modalInstance.show();
+            } catch (error) {
+                console.error('Error al cargar cliente:', error);
+                showNotification('Error al cargar los detalles del cliente: ' + error.message, 'error');
+            }
+        };
+
+        // Editar cliente
+        window.editClient = async function(clientId) {
+            try {
+                const { data: client, error } = await clientsApi.getById(clientId);
+                if (error) throw error;
+                if (!client) {
+                    showNotification('Cliente no encontrado', 'error');
+                    return;
+                }
+
+                const modal = document.getElementById('clientModal');
+                modal.querySelector('.modal-content').innerHTML = `
+                    <div class="modal-header">
+                        <h5 class="modal-title">Editar Cliente</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="clientForm">
+                            <input type="hidden" id="clientId" value="${client.id}">
+                            <div class="mb-3">
+                                <label class="form-label">Nombre</label>
+                                <input type="text" class="form-control" id="clientName" value="${client.name}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Teléfono</label>
+                                <input type="tel" class="form-control" id="clientPhone" value="${client.phone}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Correo</label>
+                                <input type="email" class="form-control" id="clientEmail" value="${client.email || ''}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Dirección</label>
+                                <input type="text" class="form-control" id="clientAddress" value="${client.address || ''}">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" onclick="window.saveEditedClient()">Guardar Cambios</button>
+                    </div>
+                `;
+                
+                const modalInstance = new bootstrap.Modal(modal);
+                modalInstance.show();
+            } catch (error) {
+                console.error('Error al cargar cliente:', error);
+                showNotification('Error al cargar los detalles del cliente: ' + error.message, 'error');
+            }
+        };
+
+        // Guardar cliente editado
+        window.saveEditedClient = async function() {
+            const form = document.getElementById('clientForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const clientId = document.getElementById('clientId').value;
+            const updatedClient = {
+                name: document.getElementById('clientName').value,
+                phone: document.getElementById('clientPhone').value,
+                email: document.getElementById('clientEmail').value || null,
+                address: document.getElementById('clientAddress').value || null
+            };
+
+            try {
+                const { error } = await clientsApi.update(clientId, updatedClient);
+                if (error) throw error;
+
+                await loadClients();
+                const modal = bootstrap.Modal.getInstance(document.getElementById('clientModal'));
+                modal.hide();
+                showNotification('Cliente actualizado exitosamente', 'success');
+            } catch (error) {
+                console.error('Error al actualizar cliente:', error);
+                showNotification('Error al actualizar el cliente: ' + error.message, 'error');
+            }
+        };
+
+        // Eliminar cliente
+        window.deleteClient = async function(clientId) {
+            if (!confirm('¿Está seguro de que desea eliminar este cliente?')) {
+                return;
+            }
+
+            try {
+                const { error } = await clientsApi.delete(clientId);
+                if (error) throw error;
+
+                await loadClients();
+                showNotification('Cliente eliminado exitosamente', 'success');
+            } catch (error) {
+                console.error('Error al eliminar cliente:', error);
+                showNotification('Error al eliminar el cliente: ' + error.message, 'error');
+            }
+        };
+
+        // Búsqueda de clientes
+        window.searchClients = async function() {
+            const searchTerm = document.getElementById('searchClient').value.toLowerCase();
+            const searchName = document.getElementById('searchName').checked;
+            const searchPhone = document.getElementById('searchPhone').checked;
+            const searchEmail = document.getElementById('searchEmail').checked;
+
+            try {
+                const { data: filteredClients, error } = await clientsApi.search({
+                    term: searchTerm,
+                    filters: {
+                        name: searchName,
+                        phone: searchPhone,
+                        email: searchEmail
+                    }
+                });
+
+                if (error) throw error;
+
+                const tbody = document.querySelector('#clientsTable tbody');
+                tbody.innerHTML = '';
+
+                filteredClients.forEach(client => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>#${client.id.slice(0, 8)}</td>
+                        <td>${client.name}</td>
+                        <td>${client.phone}</td>
+                        <td>${client.email || '-'}</td>
+                        <td>${client.address || '-'}</td>
+                        <td><span class="status-badge status-activo">Activo</span></td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-info btn-custom" onclick="window.viewClient('${client.id}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-warning btn-custom" onclick="window.editClient('${client.id}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-danger btn-custom" onclick="window.deleteClient('${client.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <button class="btn btn-primary btn-custom" onclick="window.createClientReminder('${client.id}', '${client.name}')">
+                                    <i class="fas fa-bell"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error al buscar clientes:', error);
+                showNotification('Error al buscar clientes: ' + error.message, 'error');
+            }
+        };
+
+        // Función para mostrar notificaciones
+        function showNotification(message, type = 'info') {
+            const notificationDiv = document.createElement('div');
+            notificationDiv.className = `alert alert-${type} alert-dismissible fade show notification-toast`;
+            notificationDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(notificationDiv);
+            
+            setTimeout(() => {
+                notificationDiv.remove();
+            }, 5000);
         }
-    }
-    }
-    
-    // Manejar el estado del tema oscuro
-    function loadThemePreference() {
-        const darkMode = localStorage.getItem('darkMode') === 'true';
-        document.body.classList.toggle('dark-mode', darkMode);
-    }
-    
-    // Inicialización cuando el DOM está cargado
-    document.addEventListener('DOMContentLoaded', () => {
-        setActiveNavItem();
-        loadClients();
-    loadThemePreference();
-    });
+
+        // Inicialización cuando el DOM está cargado
+        document.addEventListener('DOMContentLoaded', () => {
+            setActiveNavItem();
+            loadClients();
+            loadThemePreference();
+        });
+
+        // Exportar funciones al objeto window para uso global
+        Object.assign(window, {
+            addNewClient,
+            saveNewClient,
+            viewClient,
+            editClient,
+            saveEditedClient,
+            deleteClient,
+            searchClients,
+            createClientReminder
+        });
     </script>
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

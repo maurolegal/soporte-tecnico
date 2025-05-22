@@ -18,6 +18,174 @@
 
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
+
+    <style>
+        .notification-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1060;
+            min-width: 250px;
+            max-width: 350px;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .image-container {
+            position: relative;
+            height: 200px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .image-container:hover img {
+            transform: scale(1.05);
+        }
+
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .image-container:hover .image-overlay {
+            opacity: 1;
+        }
+
+        .image-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .image-actions button {
+            background: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .image-actions button:hover {
+            transform: scale(1.1);
+        }
+
+        .image-preview-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 1050;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-preview-modal img {
+            max-width: 90%;
+            max-height: 90vh;
+            object-fit: contain;
+        }
+
+        .image-preview-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        .search-container {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .form-check-input:checked {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+
+        .highlight {
+            background-color: #fff3cd;
+            padding: 2px;
+            border-radius: 3px;
+        }
+
+        .search-results-container {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .search-result-item {
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .search-result-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .search-result-details {
+            font-size: 0.85em;
+            color: #666;
+        }
+    </style>
 </head>
 <body>
     <div class="container-fluid">
@@ -1206,14 +1374,226 @@
 
         // Variables globales
         let currentUser = null;
+        let currentOrderId = null; // Variable para mantener el ID de la orden actual
+
+        // Función para mostrar vista de orden
+        window.showOrderView = async function(orderId) {
+            try {
+                currentOrderId = orderId; // Guardar el ID de la orden actual
+                
+                // Obtener los detalles de la orden
+                const order = await supportOrdersApi.getById(orderId);
+                if (!order) throw new Error('Orden no encontrada');
+
+                // Validar datos requeridos
+                if (!order.client || !order.client.name) {
+                    throw new Error('Datos del cliente incompletos');
+                }
+
+                // Actualizar el número de orden
+                document.getElementById('orderViewNumber').textContent = order.id.slice(0, 8);
+
+                // Información del Cliente
+                const clientInfo = document.querySelector('#orderViewSection .card:nth-child(1) .card-body');
+                clientInfo.innerHTML = `
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Nombre:</dt>
+                        <dd class="col-sm-8">${escapeHtml(order.client.name)}</dd>
+                        <dt class="col-sm-4">Teléfono:</dt>
+                        <dd class="col-sm-8">${escapeHtml(order.client.phone)}</dd>
+                        <dt class="col-sm-4">Correo:</dt>
+                        <dd class="col-sm-8">${escapeHtml(order.client.email)}</dd>
+                        <dt class="col-sm-4">Dirección:</dt>
+                        <dd class="col-sm-8">${escapeHtml(order.client.address || '-')}</dd>
+                    </dl>
+                `;
+
+                // Información del Equipo
+                const equipInfo = document.querySelector('#orderViewSection .card:nth-child(2) .card-body');
+                equipInfo.innerHTML = `
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Serie:</dt>
+                        <dd class="col-sm-8">${escapeHtml(order.serial_number)}</dd>
+                        <dt class="col-sm-4">Marca:</dt>
+                        <dd class="col-sm-8">${escapeHtml(order.brand)}</dd>
+                        <dt class="col-sm-4">Modelo:</dt>
+                        <dd class="col-sm-8">${escapeHtml(order.model)}</dd>
+                        <dt class="col-sm-4">Contraseña:</dt>
+                        <dd class="col-sm-8">${escapeHtml(order.user_password || '-')}</dd>
+                    </dl>
+                `;
+
+                // Resumen del Servicio
+                const serviceInfo = document.querySelector('#orderViewSection .card:nth-child(3) .card-body .row');
+                serviceInfo.innerHTML = `
+                    <div class="col-md-3">
+                        <small class="text-muted d-block">Fecha de Ingreso</small>
+                        <strong>${formatDate(order.entry_date)}</strong>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted d-block">Fecha Est. Entrega</small>
+                        <strong>${formatDate(order.estimated_delivery_date)}</strong>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted d-block">Técnico Asignado</small>
+                        <strong>${order.technician ? escapeHtml(order.technician.full_name) : 'Sin asignar'}</strong>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted d-block">Costo Estimado</small>
+                        <strong>$${formatMoney(order.estimated_cost)}</strong>
+                    </div>
+                `;
+
+                // Línea de tiempo
+                const timeline = document.querySelector('.timeline');
+                timeline.innerHTML = order.timeline && order.timeline.length > 0 ? 
+                    order.timeline.map(entry => `
+                        <div class="timeline-item">
+                            <div class="timeline-point bg-${getStatusColor(entry.status)}"></div>
+                            <div class="timeline-content">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-1">${escapeHtml(entry.title)}</h6>
+                                    <small class="text-muted">${formatDate(entry.created_at)}</small>
+                                </div>
+                                <p class="mb-0">${escapeHtml(entry.description)}</p>
+                                <small class="text-muted">Por: ${escapeHtml(entry.created_by || currentUser.email)}</small>
+                            </div>
+                        </div>
+                    `).join('') : '<p class="text-muted text-center">No hay entradas en la línea de tiempo</p>';
+
+                // Galería de imágenes
+                const gallery = document.getElementById('imageGallery');
+                gallery.innerHTML = order.images && order.images.length > 0 ? 
+                    order.images.map(image => `
+                        <div class="col-md-4">
+                            <div class="image-container">
+                                <img src="${image.image_url}" alt="Imagen del equipo" onerror="this.src='img/placeholder.png'">
+                                <div class="image-overlay">
+                                    <div class="image-actions">
+                                        <button onclick="viewImage('${image.image_url}')" class="btn btn-light btn-sm">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button onclick="deleteImage('${image.id}')" class="btn btn-light btn-sm">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('') : '<p class="text-muted text-center">No hay imágenes disponibles</p>';
+
+                // Detalles del Servicio
+                const serviceDetails = document.querySelector('#orderViewSection .card:nth-child(6) .card-body');
+                serviceDetails.innerHTML = `
+                    <div class="row g-4">
+                        <div class="col-md-12">
+                            <h6 class="text-muted">Descripción del Problema</h6>
+                            <p>${escapeHtml(order.problem_description)}</p>
+                        </div>
+                        <div class="col-md-12">
+                            <h6 class="text-muted">Estado Inicial</h6>
+                            <p>${escapeHtml(order.initial_state)}</p>
+                        </div>
+                        <div class="col-md-12">
+                            <h6 class="text-muted">Condiciones Físicas</h6>
+                            <p>${escapeHtml(order.physical_conditions)}</p>
+                        </div>
+                    </div>
+                `;
+
+                // Mostrar la sección de detalles y ocultar la principal
+                document.getElementById('orderViewSection').style.display = 'block';
+                document.getElementById('mainSection').style.display = 'none';
+
+            } catch (error) {
+                console.error('Error al mostrar orden:', error);
+                showNotification('Error al cargar los detalles de la orden: ' + error.message, 'error');
+            }
+        };
+
+        // Función para ocultar vista de orden
+        window.hideOrderView = function() {
+            currentOrderId = null; // Limpiar el ID de la orden actual
+            document.getElementById('orderViewSection').style.display = 'none';
+            document.getElementById('mainSection').style.display = 'block';
+        };
+
+        // Función para obtener el color según el estado
+        function getStatusColor(status) {
+            const colors = {
+                'recepcion': 'primary',
+                'diagnostico': 'info',
+                'en_proceso': 'warning',
+                'completado': 'success',
+                'problema': 'danger'
+            };
+            return colors[status] || 'secondary';
+        }
+
+        // Función para ver imagen en grande
+        window.viewImage = function(imageUrl) {
+            const modal = document.createElement('div');
+            modal.className = 'image-preview-modal';
+            modal.innerHTML = `
+                <span class="image-preview-close" onclick="this.parentElement.remove()">&times;</span>
+                <img src="${imageUrl}" alt="Vista previa" onerror="this.src='img/placeholder.png'">
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'flex';
+        };
+
+        // Función para eliminar imagen
+        window.deleteImage = async function(imageId) {
+            if (!currentOrderId) {
+                showNotification('Error: No se puede identificar la orden actual', 'error');
+                return;
+            }
+
+            if (!confirm('¿Estás seguro de que deseas eliminar esta imagen?')) return;
+            
+            try {
+                await supportOrdersApi.deleteImage(imageId);
+                showNotification('Imagen eliminada correctamente', 'success');
+                // Recargar la vista de la orden
+                await showOrderView(currentOrderId);
+            } catch (error) {
+                console.error('Error al eliminar imagen:', error);
+                showNotification('Error al eliminar la imagen: ' + error.message, 'error');
+            }
+        };
+
+        // Funciones auxiliares
+        function escapeHtml(unsafe) {
+            if (unsafe == null) return '';
+            return unsafe
+                .toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            return new Date(dateString).toLocaleString('es-ES', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function formatMoney(amount) {
+            if (amount == null) return '0.00';
+            return Number(amount).toFixed(2);
+        }
 
         // Función para cambiar entre tabs
         window.nextTab = function(tabId) {
-            // Obtener el elemento tab
             const nextTab = document.querySelector(`button[data-bs-target="#${tabId}"]`);
-            // Crear una instancia de Tab de Bootstrap
             const tab = new bootstrap.Tab(nextTab);
-            // Activar el tab
             tab.show();
         };
 
@@ -1423,8 +1803,18 @@
 
         // Función para mostrar notificaciones
         function showNotification(message, type = 'info') {
-            // Implementar sistema de notificaciones
-            alert(message);
+            const notificationDiv = document.createElement('div');
+            notificationDiv.className = `alert alert-${type} alert-dismissible fade show notification-toast`;
+            notificationDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(notificationDiv);
+            
+            // Remover después de 5 segundos
+            setTimeout(() => {
+                notificationDiv.remove();
+            }, 5000);
         }
     </script>
     // Agregar este script en todos los archivos HTML
@@ -1534,153 +1924,6 @@
     // Cargar preferencia de tema al inicio
     loadThemePreference();
     </script>
-
-    <style>
-    .image-container {
-        position: relative;
-        height: 200px;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .image-container img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.3s ease;
-    }
-
-    .image-container:hover img {
-        transform: scale(1.05);
-    }
-
-    .image-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0,0,0,0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .image-container:hover .image-overlay {
-        opacity: 1;
-    }
-
-    .image-actions {
-        display: flex;
-        gap: 10px;
-    }
-
-    .image-actions button {
-        background: white;
-        border: none;
-        border-radius: 50%;
-        width: 36px;
-        height: 36px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: transform 0.2s ease;
-    }
-
-    .image-actions button:hover {
-        transform: scale(1.1);
-    }
-
-    .image-preview-modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0,0,0,0.9);
-        z-index: 1050;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .image-preview-modal img {
-        max-width: 90%;
-        max-height: 90vh;
-        object-fit: contain;
-    }
-
-    .image-preview-close {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        color: white;
-        font-size: 30px;
-        cursor: pointer;
-    }
-
-    .search-container {
-        background: #f8f9fa;
-        padding: 15px;
-        border-radius: 8px;
-        margin-top: 10px;
-    }
-
-    .form-check-input:checked {
-        background-color: #0d6efd;
-        border-color: #0d6efd;
-    }
-
-    .highlight {
-        background-color: #fff3cd;
-        padding: 2px;
-        border-radius: 3px;
-    }
-
-    .search-results-container {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background: white;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        max-height: 200px;
-        overflow-y: auto;
-        z-index: 1000;
-        display: none;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .search-result-item {
-        padding: 10px 15px;
-        border-bottom: 1px solid #eee;
-        cursor: pointer;
-        transition: background-color 0.2s;
-    }
-
-    .search-result-item:hover {
-        background-color: #f8f9fa;
-    }
-
-    .search-result-item:last-child {
-        border-bottom: none;
-    }
-
-    .search-result-name {
-        font-weight: 500;
-        color: #333;
-    }
-
-    .search-result-details {
-        font-size: 0.85em;
-        color: #666;
-    }
-    </style>
 
     <script>
         // Función para buscar clientes existentes
