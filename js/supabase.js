@@ -8,17 +8,26 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 let supabase;
 
 // Comprobación si estamos en un entorno de navegador donde se cargó Supabase desde CDN
-if (typeof window !== 'undefined' && window.Supabase) {
-  try {
-    // Usamos el objeto global Supabase disponible en la CDN
+// Intentamos diferentes formas en que Supabase podría estar disponible
+if (typeof window !== 'undefined') {
+  if (window.supabase) {
+    // Formato del CDN oficial más reciente
+    supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    console.log('supabase client initialized successfully using window.supabase');
+  } else if (window.Supabase) {
+    // Formato alternativo del CDN
     supabase = window.Supabase.createClient(supabaseUrl, supabaseKey);
-    console.log('supabase client initialized successfully using CDN');
-  } catch (error) {
-    console.error('Error initializing supabase client:', error);
+    console.log('supabase client initialized successfully using window.Supabase');
+  } else if (window.createClient) {
+    // Otra posible exportación del CDN
+    supabase = window.createClient(supabaseUrl, supabaseKey);
+    console.log('supabase client initialized successfully using window.createClient');
+  } else {
+    console.warn('Supabase not available from CDN, using fallback client');
     createFallbackClient();
   }
 } else {
-  console.warn('Supabase not available, using fallback client');
+  console.warn('Not in browser environment, using fallback client');
   createFallbackClient();
 }
 
