@@ -15,6 +15,9 @@
     <!-- Chart.js + ApexCharts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
 </head>
 <body>
     <div class="container-fluid">
@@ -427,6 +430,13 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
+                    <!-- Búsqueda de Cliente Existente -->
+                    <div class="mb-3">
+                        <label class="form-label">Buscar Cliente Existente</label>
+                        <input type="text" class="form-control form-control-custom" id="searchExistingClient" placeholder="Buscar por nombre, teléfono o correo...">
+                        <div id="clientSearchResults" class="search-results-container"></div>
+                    </div>
+
                     <ul class="nav nav-tabs" role="tablist">
                         <li class="nav-item">
                             <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#clienteTab">
@@ -1225,10 +1235,12 @@
         // Función para cargar técnicos
         async function loadTechnicians() {
             try {
-                const { data: profiles } = await supabase
+                const { data: profiles, error } = await supabase
                     .from('profiles')
                     .select('id, full_name')
                     .eq('role', 'tecnico');
+
+                if (error) throw error;
 
                 const select = document.getElementById('newTechnician');
                 select.innerHTML = '<option value="">Seleccionar técnico...</option>';
@@ -1241,7 +1253,7 @@
                 });
             } catch (error) {
                 console.error('Error al cargar técnicos:', error);
-                showNotification('Error al cargar la lista de técnicos', 'error');
+                showNotification('Error al cargar la lista de técnicos: ' + error.message, 'error');
             }
         }
 
@@ -1256,7 +1268,7 @@
                     address: document.getElementById('newClientAddress').value
                 };
 
-                // Buscar si el cliente ya existe
+                // Buscar si el cliente ya existe por teléfono
                 const { data: existingClients } = await supabase
                     .from('clients')
                     .select('id')
@@ -1300,16 +1312,23 @@
                     user_password: document.getElementById('newPassword').value
                 };
 
-                const { data: newOrder } = await supportOrdersApi.create(supportData);
+                const { data: newOrder, error } = await supabase
+                    .from('support_orders')
+                    .insert([supportData])
+                    .select()
+                    .single();
+
+                if (error) throw error;
 
                 // 3. Crear entrada inicial en la línea de tiempo
-                await supportOrdersApi.addTimelineEntry({
-                    support_order_id: newOrder.id,
-                    title: 'Recepción del equipo',
-                    description: 'Se ha registrado el ingreso del equipo para servicio técnico.',
-                    status: 'recepcion',
-                    created_by: currentUser.id
-                });
+                await supabase
+                    .from('support_timeline')
+                    .insert([{
+                        support_order_id: newOrder.id,
+                        title: 'Recepción del equipo',
+                        description: 'Se ha registrado el ingreso del equipo para servicio técnico.',
+                        status: 'recepcion'
+                    }]);
 
                 // 4. Cerrar modal y actualizar lista
                 const modal = bootstrap.Modal.getInstance(document.getElementById('newSupportModal'));
@@ -1321,17 +1340,29 @@
                 // 6. Recargar lista de órdenes
                 await loadSupportOrders();
 
+                // 7. Mostrar notificación de éxito
                 showNotification('Orden de servicio creada exitosamente', 'success');
             } catch (error) {
                 console.error('Error al guardar:', error);
-                showNotification('Error al guardar la orden de servicio', 'error');
+                showNotification('Error al guardar la orden de servicio: ' + error.message, 'error');
             }
         };
 
         // Función para cargar órdenes de soporte
         async function loadSupportOrders() {
             try {
-                const orders = await supportOrdersApi.getAll();
+                const { data: orders, error } = await supabase
+                    .from('support_orders')
+                    .select(`
+                        *,
+                        client:clients(*),
+                        technician:profiles(*),
+                        timeline:support_timeline(*)
+                    `)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
                 const tbody = document.querySelector('#supportTable tbody');
                 tbody.innerHTML = '';
 
@@ -1365,7 +1396,7 @@
                 });
             } catch (error) {
                 console.error('Error al cargar órdenes:', error);
-                showNotification('Error al cargar la lista de órdenes', 'error');
+                showNotification('Error al cargar la lista de órdenes: ' + error.message, 'error');
             }
         }
 

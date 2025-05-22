@@ -1,7 +1,7 @@
-// No necesitas el import, usa el objeto global supabase
-const supabaseUrl = process.env.SUPABASE_URL || 'https://stddbzpxdqxuzhhqywtc.supabase.co'
-const supabaseKey = process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0ZGRienB4ZHF4dXpoaHF5d3RjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5MTgzOTAsImV4cCI6MjA2MzQ5NDM5MH0.ZLrpXpw5ATu0ymcXgWMBfYiCLsoDxULRYRn_31NMzTE'
-export const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
+// Configuración de Supabase
+const supabaseUrl = 'https://stddbzpxdqxuzhhqywtc.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0ZGRienB4ZHF4dXpoaHF5d3RjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5MTgzOTAsImV4cCI6MjA2MzQ5NDM5MH0.ZLrpXpw5ATu0ymcXgWMBfYiCLsoDxULRYRn_31NMzTE'
+export const supabase = Supabase.createClient(supabaseUrl, supabaseKey)
 
 // Funciones de autenticación
 export const auth = {
