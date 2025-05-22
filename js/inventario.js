@@ -190,6 +190,30 @@ export async function saveProduct() {
     }
     
     try {
+        // Comprobar si se seleccionó "Agregar nuevo proveedor"
+        const supplierSelect = document.getElementById('productSupplier');
+        let supplierId = null;
+        
+        if (supplierSelect.value === 'nuevo') {
+            // Si se seleccionó "nuevo", mostrar modal para crear proveedor
+            showNewSupplierModal();
+            return; // Salimos de la función y el guardado continuará después de que se cree el proveedor
+        } else {
+            // Usar el proveedor seleccionado (podría ser null si se seleccionó "Seleccionar proveedor")
+            supplierId = supplierSelect.value || null;
+        }
+        
+        await saveProductWithSupplierId(supplierId);
+        
+    } catch (error) {
+        console.error('Error al guardar producto:', error);
+        showNotification(`Error al guardar el producto: ${error.message}`, 'danger');
+    }
+}
+
+// Función auxiliar para guardar producto con un ID de proveedor específico
+async function saveProductWithSupplierId(supplierId) {
+    try {
         const newProduct = {
             code: document.getElementById('productCode').value,
             name: document.getElementById('productName').value,
@@ -201,7 +225,7 @@ export async function saveProduct() {
             location: document.getElementById('productLocation').value,
             purchase_price: parseFloat(document.getElementById('productPurchasePrice').value) || 0,
             sale_price: parseFloat(document.getElementById('productSalePrice').value) || 0,
-            supplier_id: document.getElementById('productSupplier').value || null,
+            supplier_id: supplierId,
             purchase_date: document.getElementById('productPurchaseDate').value,
             warranty_months: parseInt(document.getElementById('productWarranty').value) || 0,
             notes: document.getElementById('productNotes').value
@@ -293,7 +317,7 @@ async function registerInitialPurchase(productId, productData) {
 }
 
 // Cargar proveedores
-async function loadSuppliers() {
+export async function loadSuppliers() {
     try {
         const { data, error } = await supabase
             .from('suppliers')
@@ -306,18 +330,24 @@ async function loadSuppliers() {
         
         // Actualizar select de proveedores
         const select = document.getElementById('productSupplier');
-        const defaultOptions = select.innerHTML;
-        select.innerHTML = defaultOptions;
+        if (select) {
+            const defaultOptions = select.innerHTML.split('<option value="nuevo">')[0];
+            select.innerHTML = defaultOptions + '<option value="nuevo">+ Agregar nuevo proveedor</option>';
+            
+            suppliers.forEach(supplier => {
+                const option = document.createElement('option');
+                option.value = supplier.id;
+                option.textContent = supplier.name;
+                select.insertBefore(option, select.lastElementChild);
+            });
+        }
         
-        suppliers.forEach(supplier => {
-            const option = document.createElement('option');
-            option.value = supplier.id;
-            option.textContent = supplier.name;
-            select.insertBefore(option, select.lastElementChild);
-        });
+        return suppliers;
         
     } catch (error) {
         console.error('Error al cargar proveedores:', error);
+        showNotification('Error al cargar proveedores', 'danger');
+        return [];
     }
 }
 
@@ -529,4 +559,58 @@ function formatDate(dateString) {
         month: '2-digit', 
         day: '2-digit'
     });
+}
+
+// Mostrar el modal de nuevo proveedor
+function showNewSupplierModal() {
+    const modal = document.getElementById('newSupplierModal');
+    const modalInstance = new bootstrap.Modal(modal);
+    
+    // Agregar evento para guardar el proveedor
+    document.getElementById('btnSaveSupplier').addEventListener('click', saveNewSupplier, {once: true});
+    
+    modalInstance.show();
+}
+
+// Guardar nuevo proveedor y continuar con el guardado del producto
+async function saveNewSupplier() {
+    const form = document.getElementById('supplierForm');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    try {
+        const supplierData = {
+            name: document.getElementById('supplierName').value.trim(),
+            contact_name: document.getElementById('supplierContact').value.trim() || null,
+            phone: document.getElementById('supplierPhone').value.trim() || null,
+            email: document.getElementById('supplierEmail').value.trim() || null,
+            address: document.getElementById('supplierAddress').value.trim() || null,
+            status: 'active'
+        };
+        
+        // Crear proveedor
+        const newProvider = await inventoryApi.suppliers.create(supplierData);
+        showNotification(`Proveedor "${supplierData.name}" creado correctamente`, 'success');
+        
+        // Cerrar el modal de proveedor
+        bootstrap.Modal.getInstance(document.getElementById('newSupplierModal')).hide();
+        
+        // Actualizar el select de proveedores
+        await loadSuppliers();
+        
+        // Seleccionar el nuevo proveedor
+        const supplierSelect = document.getElementById('productSupplier');
+        if (supplierSelect) {
+            supplierSelect.value = newProvider.id;
+        }
+        
+        // Continuar con el guardado del producto
+        await saveProductWithSupplierId(newProvider.id);
+        
+    } catch (error) {
+        console.error('Error al guardar proveedor:', error);
+        showNotification(`Error al guardar el proveedor: ${error.message}`, 'danger');
+    }
 } 

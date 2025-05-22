@@ -335,6 +335,50 @@
         </div>
     </div>
 
+    <!-- Modal para nuevo proveedor -->
+    <div class="modal fade" id="newSupplierModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-white">
+                    <h5 class="modal-title"><i class="fas fa-truck me-2"></i>Nuevo Proveedor</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="supplierForm">
+                        <div class="mb-3">
+                            <label for="supplierName" class="form-label">Nombre del Proveedor</label>
+                            <input type="text" class="form-control" id="supplierName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="supplierContact" class="form-label">Persona de Contacto</label>
+                            <input type="text" class="form-control" id="supplierContact">
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="supplierPhone" class="form-label">Teléfono</label>
+                                <input type="tel" class="form-control" id="supplierPhone">
+                            </div>
+                            <div class="col">
+                                <label for="supplierEmail" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="supplierEmail">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="supplierAddress" class="form-label">Dirección</label>
+                            <textarea class="form-control" id="supplierAddress" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnSaveSupplier">
+                        <i class="fas fa-save me-2"></i>Guardar Proveedor
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts CDN -->
     <!-- Cargador de Supabase - Garantiza la disponibilidad -->
     <script src="js/supabase-loader.js"></script>
