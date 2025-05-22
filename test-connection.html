@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Conexión</title>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Test de Conexión</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <h5>Estado de Supabase:</h5>
+                            <div id="supabaseStatus" class="alert">Verificando...</div>
+                        </div>
+                        <div class="mb-3">
+                            <h5>Estado de Vercel:</h5>
+                            <div id="vercelStatus" class="alert alert-success">✅ Conectado (la página está cargando en Vercel)</div>
+                        </div>
+                        <div class="mb-3">
+                            <button class="btn btn-primary" onclick="testSupabaseConnection()">Probar conexión de nuevo</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Esperar a que el script de Supabase se cargue completamente
+        window.onload = function() {
+            // Configuración de Supabase
+            const supabaseUrl = 'https://stddbzpxdqxuzhhqywtc.supabase.co';
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0ZGRienB4ZHF4dXpoaHF5d3RjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5MTgzOTAsImV4cCI6MjA2MzQ5NDM5MH0.ZLrpXpw5ATu0ymcXgWMBfYiCLsoDxULRYRn_31NMzTE';
+            
+            // Crear el cliente de Supabase usando el objeto global
+            window.supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+            
+            // Ejecutar el test inicial
+            testSupabaseConnection();
+        };
+
+        // Test de conexión a Supabase
+        async function testSupabaseConnection() {
+            try {
+                document.getElementById('supabaseStatus').className = 'alert alert-info';
+                document.getElementById('supabaseStatus').innerHTML = '🔄 Verificando conexión...';
+
+                const { data, error } = await window.supabaseClient
+                    .from('profiles')
+                    .select('count')
+                    .limit(1);
+
+                if (error) throw error;
+
+                document.getElementById('supabaseStatus').className = 'alert alert-success';
+                document.getElementById('supabaseStatus').innerHTML = '✅ Conectado a Supabase exitosamente';
+            } catch (error) {
+                console.error('Error de conexión:', error);
+                document.getElementById('supabaseStatus').className = 'alert alert-danger';
+                document.getElementById('supabaseStatus').innerHTML = `❌ Error de conexión: ${error.message || error}`;
+            }
+        }
+    </script>
+</body>
+</html> 
