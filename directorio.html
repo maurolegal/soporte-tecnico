@@ -179,10 +179,10 @@
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h5 class="mb-0">Lista de Clientes</h5>
                             <div class="d-flex gap-2">
-                                <button class="btn btn-success btn-sm btn-custom" onclick="exportToExcel()">
+                                <button class="btn btn-success btn-sm btn-custom" id="btnExportExcel">
                                     <i class="fas fa-file-excel me-1"></i>Exportar
                                 </button>
-                                <button class="btn btn-primary btn-sm btn-custom" onclick="addNewClient()">
+                                <button class="btn btn-primary btn-sm btn-custom" id="btnAddClient">
                                     <i class="fas fa-plus me-1"></i>Nuevo Cliente
                                 </button>
                             </div>
@@ -756,7 +756,27 @@
             setActiveNavItem();
             loadClients();
             loadThemePreference();
+
+            // Agregar event listeners
+            document.getElementById('btnAddClient').addEventListener('click', addNewClient);
+            document.getElementById('btnExportExcel').addEventListener('click', exportToExcel);
+            
+            // Configurar búsqueda en tiempo real
+            document.getElementById('searchClient').addEventListener('input', debounce(searchClients, 300));
         });
+
+        // Función debounce para optimizar la búsqueda
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
 
         // Exportar funciones al objeto window para uso global
         Object.assign(window, {
@@ -769,6 +789,74 @@
             searchClients,
             createClientReminder
         });
+
+        // Función para exportar a Excel
+        async function exportToExcel() {
+            try {
+                const { data: clients, error } = await clientsApi.getAll();
+                if (error) throw error;
+
+                // Preparar los datos para exportar
+                const exportData = clients.map(client => ({
+                    'ID': client.id.slice(0, 8),
+                    'Nombre': client.name,
+                    'Teléfono': client.phone,
+                    'Correo': client.email || '-',
+                    'Dirección': client.address || '-',
+                    'Fecha de Registro': new Date(client.created_at).toLocaleString()
+                }));
+
+                // Convertir a CSV
+                const headers = Object.keys(exportData[0]);
+                const csvContent = [
+                    headers.join(','),
+                    ...exportData.map(row => headers.map(header => `"${row[header]}"`).join(','))
+                ].join('\n');
+
+                // Crear y descargar el archivo
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `directorio_clientes_${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                showNotification('Archivo exportado exitosamente', 'success');
+            } catch (error) {
+                console.error('Error al exportar clientes:', error);
+                showNotification('Error al exportar clientes: ' + error.message, 'error');
+            }
+        }
+
+        // Versión mejorada para formularios por pasos
+        let currentStep = 0;
+        const steps = document.querySelectorAll('.tab-pane');
+
+        function nextTab() {
+            if (currentStep < steps.length - 1) {
+                currentStep++;
+                showStep(currentStep);
+            }
+        }
+
+        function prevTab() {
+            if (currentStep > 0) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        }
+
+        function showStep(stepIndex) {
+            steps.forEach((step, index) => {
+                step.classList.toggle('active', index === stepIndex);
+            });
+            
+            // Actualizar indicadores visuales (opcional)
+            document.querySelectorAll('.step-indicator').forEach((indicator, index) => {
+                indicator.classList.toggle('active', index <= stepIndex);
+            });
+        }
     </script>
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

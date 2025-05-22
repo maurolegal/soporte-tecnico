@@ -21,6 +21,10 @@ CREATE TABLE IF NOT EXISTS clients (
     phone TEXT NOT NULL,
     email TEXT,
     address TEXT,
+    status TEXT NOT NULL DEFAULT 'activo' CHECK (status IN ('activo', 'inactivo')),
+    notes TEXT,
+    last_service_date TIMESTAMP WITH TIME ZONE,
+    next_service_date TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
@@ -82,10 +86,10 @@ INSERT INTO profiles (email, correo, full_name, role) VALUES
 ('recepcion@techsupport.com', 'recepcion@techsupport.com', 'Juan Recepción', 'recepcion');
 
 -- Insertar clientes de prueba
-INSERT INTO clients (name, phone, email, address) VALUES
-('Ana Martínez', '+1234567890', 'ana@email.com', 'Av. Principal #123, Ciudad'),
-('Carlos Pérez', '+1234567891', 'carlos@email.com', 'Calle 45 #789, Ciudad'),
-('María López', '+1234567892', 'maria@email.com', 'Plaza Central #456, Ciudad');
+INSERT INTO clients (name, phone, email, address, status, notes, last_service_date, next_service_date) VALUES
+('Ana Martínez', '+1234567890', 'ana@email.com', 'Av. Principal #123, Ciudad', 'activo', 'Cliente frecuente, preferencia por mantenimiento preventivo', NOW() - INTERVAL '2 months', NOW() + INTERVAL '4 months'),
+('Carlos Pérez', '+1234567891', 'carlos@email.com', 'Calle 45 #789, Ciudad', 'activo', 'Equipos de alta gama, requiere atención prioritaria', NOW() - INTERVAL '1 month', NOW() + INTERVAL '5 months'),
+('María López', '+1234567892', 'maria@email.com', 'Plaza Central #456, Ciudad', 'activo', 'Nueva cliente, primera visita pendiente', NULL, NOW() + INTERVAL '2 weeks');
 
 -- Insertar órdenes de soporte de prueba
 INSERT INTO support_orders (
@@ -232,4 +236,54 @@ RETURNS TABLE (
         so.brand ILIKE '%' || search_query || '%' OR
         so.model ILIKE '%' || search_query || '%'
     ORDER BY so.created_at DESC;
+$$;
+
+-- Crear funciones para búsqueda de clientes
+CREATE OR REPLACE FUNCTION search_clients(search_query TEXT)
+RETURNS TABLE (
+    id UUID,
+    name TEXT,
+    phone TEXT,
+    email TEXT,
+    address TEXT,
+    status TEXT,
+    last_service_date TIMESTAMP WITH TIME ZONE,
+    next_service_date TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE
+) LANGUAGE sql AS $$
+    SELECT 
+        c.id,
+        c.name,
+        c.phone,
+        c.email,
+        c.address,
+        c.status,
+        c.last_service_date,
+        c.next_service_date,
+        c.created_at
+    FROM clients c
+    WHERE 
+        c.name ILIKE '%' || search_query || '%' OR
+        c.phone ILIKE '%' || search_query || '%' OR
+        c.email ILIKE '%' || search_query || '%' OR
+        c.address ILIKE '%' || search_query || '%'
+    ORDER BY c.created_at DESC;
+$$;
+
+-- Función para obtener estadísticas de clientes
+CREATE OR REPLACE FUNCTION get_client_stats()
+RETURNS TABLE (
+    total_clients BIGINT,
+    active_clients BIGINT,
+    inactive_clients BIGINT,
+    recent_clients BIGINT,
+    pending_service_clients BIGINT
+) LANGUAGE sql AS $$
+    SELECT 
+        COUNT(*) as total_clients,
+        COUNT(*) FILTER (WHERE status = 'activo') as active_clients,
+        COUNT(*) FILTER (WHERE status = 'inactivo') as inactive_clients,
+        COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '30 days') as recent_clients,
+        COUNT(*) FILTER (WHERE next_service_date IS NOT NULL AND next_service_date > NOW()) as pending_service_clients
+    FROM clients;
 $$; 
