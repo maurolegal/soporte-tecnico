@@ -1,9 +1,10 @@
 // Funciones para el módulo de inventario
-import { supabase } from './supabase.js';
+import { supabase, inventoryApi } from './supabase.js';
 
 // Variables globales
 let products = [];
 let categories = [];
+window.allProducts = [];
 let suppliers = [];
 let currentProductId = null;
 
@@ -160,7 +161,7 @@ export function showAddProductModal() {
         </div>
         <div class="modal-footer bg-light">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <button type="button" class="btn btn-primary" onclick="saveProduct()">
+            <button type="button" class="btn btn-primary" id="btnSaveProduct">
                 <i class="fas fa-save me-2"></i>Guardar Producto
             </button>
         </div>
@@ -171,6 +172,9 @@ export function showAddProductModal() {
     
     // Cargar proveedores y categorías
     loadSuppliers();
+    
+    // Agregar evento para guardar producto
+    document.getElementById('btnSaveProduct').addEventListener('click', saveProduct);
     
     // Mostrar el modal
     const modalInstance = new bootstrap.Modal(modal);
@@ -185,63 +189,47 @@ export async function saveProduct() {
         return;
     }
     
-    const newProduct = {
-        code: document.getElementById('productCode').value,
-        name: document.getElementById('productName').value,
-        description: document.getElementById('productDescription').value,
-        category: document.getElementById('productCategory').value,
-        stock: parseFloat(document.getElementById('productStock').value) || 0,
-        min_stock: parseFloat(document.getElementById('productMinStock').value) || 5,
-        unit: document.getElementById('productUnit').value,
-        location: document.getElementById('productLocation').value,
-        purchase_price: parseFloat(document.getElementById('productPurchasePrice').value) || 0,
-        sale_price: parseFloat(document.getElementById('productSalePrice').value) || 0,
-        supplier_id: document.getElementById('productSupplier').value,
-        purchase_date: document.getElementById('productPurchaseDate').value,
-        warranty_months: parseInt(document.getElementById('productWarranty').value) || 0,
-        notes: document.getElementById('productNotes').value,
-        created_at: new Date().toISOString()
-    };
-    
     try {
-        // Si es un producto nuevo
-        if (!currentProductId) {
-            const { data, error } = await supabase
-                .from('products')
-                .insert([newProduct])
-                .select();
-                
-            if (error) throw error;
+        const newProduct = {
+            code: document.getElementById('productCode').value,
+            name: document.getElementById('productName').value,
+            description: document.getElementById('productDescription').value,
+            category: document.getElementById('productCategory').value,
+            stock: parseFloat(document.getElementById('productStock').value) || 0,
+            min_stock: parseFloat(document.getElementById('productMinStock').value) || 5,
+            unit: document.getElementById('productUnit').value,
+            location: document.getElementById('productLocation').value,
+            purchase_price: parseFloat(document.getElementById('productPurchasePrice').value) || 0,
+            sale_price: parseFloat(document.getElementById('productSalePrice').value) || 0,
+            supplier_id: document.getElementById('productSupplier').value || null,
+            purchase_date: document.getElementById('productPurchaseDate').value,
+            warranty_months: parseInt(document.getElementById('productWarranty').value) || 0,
+            notes: document.getElementById('productNotes').value
+        };
+        
+        if (currentProductId) {
+            // Actualizar producto existente
+            await inventoryApi.products.update(currentProductId, newProduct);
+            showNotification('Producto actualizado correctamente', 'success');
+        } else {
+            // Crear nuevo producto
+            const createdProduct = await inventoryApi.products.create(newProduct);
             
-            // Si se agregó stock, registrar como compra
+            // Si hay stock inicial, registrar compra inicial
             if (newProduct.stock > 0) {
-                await registerInitialPurchase(data[0].id, newProduct);
+                await registerInitialPurchase(createdProduct.id, newProduct);
             }
             
-            showNotification('Producto agregado correctamente', 'success');
-        } 
-        // Si es actualización
-        else {
-            const { error } = await supabase
-                .from('products')
-                .update(newProduct)
-                .eq('id', currentProductId);
-                
-            if (error) throw error;
-            
-            showNotification('Producto actualizado correctamente', 'success');
+            showNotification('Producto añadido correctamente', 'success');
         }
         
-        // Cerrar modal y recargar productos
-        const modal = bootstrap.Modal.getInstance(document.getElementById('productModal'));
-        modal.hide();
-        
-        // Recargar productos
-        loadProducts();
+        // Cerrar modal y actualizar lista
+        bootstrap.Modal.getInstance(document.getElementById('productModal')).hide();
+        await loadProducts();
         
     } catch (error) {
         console.error('Error al guardar producto:', error);
-        showNotification('Error al guardar el producto: ' + error.message, 'danger');
+        showNotification(`Error al guardar el producto: ${error.message}`, 'danger');
     }
 }
 
@@ -365,64 +353,197 @@ function showNotification(message, type = 'info') {
     }, 5000);
 }
 
-// Exportar funciones principales
-export {
-    loadProducts,
-    loadPurchases,
-    loadSales
-};
-
-// Cargar productos
-async function loadProducts() {
+// Función para cargar productos
+export async function loadProducts() {
     try {
-        const { data, error } = await supabase.from('products').select('*');
-        if (error) throw error;
+        const data = await inventoryApi.products.getAll();
+        products = data;
+        window.allProducts = data; // Guardar en variable global para búsquedas
         
-        products = data || [];
         updateProductsTable();
-        updateInventoryStats();
+        updateProductCounters();
+        
+        console.log('Productos cargados:', products.length);
     } catch (error) {
-        console.error('Error al cargar productos:', error.message);
+        console.error('Error al cargar productos:', error);
         showNotification('Error al cargar los productos', 'danger');
     }
 }
 
-// Cargar compras
-async function loadPurchases() {
+// Función para cargar compras
+export async function loadPurchases() {
     try {
-        const { data, error } = await supabase.from('purchases').select(`
-            *,
-            supplier:supplier_id(name)
-        `).order('date', { ascending: false });
+        const data = await inventoryApi.purchases.getAll();
+        window.purchases = data;
         
-        if (error) throw error;
+        updatePurchasesTable();
+        
+        console.log('Compras cargadas:', data.length);
     } catch (error) {
-        console.error('Error al cargar compras:', error.message);
+        console.error('Error al cargar compras:', error);
         showNotification('Error al cargar las compras', 'danger');
     }
 }
 
-// Cargar ventas
-async function loadSales() {
+// Función para cargar ventas
+export async function loadSales() {
     try {
-        const { data, error } = await supabase.from('sales').select(`
-            *,
-            client:client_id(name)
-        `).order('date', { ascending: false });
+        const data = await inventoryApi.sales.getAll();
+        window.sales = data;
         
-        if (error) throw error;
+        updateSalesTable();
+        
+        console.log('Ventas cargadas:', data.length);
     } catch (error) {
-        console.error('Error al cargar ventas:', error.message);
+        console.error('Error al cargar ventas:', error);
         showNotification('Error al cargar las ventas', 'danger');
     }
 }
 
-// Actualizar estadísticas de inventario
-function updateInventoryStats() {
-    // Implementación en inventario.html
+// Función para actualizar los contadores de productos
+function updateProductCounters() {
+    const totalProducts = products.length;
+    const lowStock = products.filter(p => p.stock > 0 && p.stock <= p.min_stock).length;
+    const outOfStock = products.filter(p => p.stock === 0).length;
+    const totalValue = products.reduce((sum, p) => sum + (p.stock * p.purchase_price), 0);
+    
+    document.getElementById('totalProducts').textContent = totalProducts;
+    document.getElementById('lowStock').textContent = lowStock;
+    document.getElementById('outOfStock').textContent = outOfStock;
+    document.getElementById('totalValue').textContent = formatCurrency(totalValue);
+    
+    // Actualizar las barras de progreso
+    if (totalProducts > 0) {
+        document.querySelector('#lowStock').closest('.card').querySelector('.progress-bar').style.width = 
+            `${(lowStock / totalProducts) * 100}%`;
+            
+        document.querySelector('#outOfStock').closest('.card').querySelector('.progress-bar').style.width = 
+            `${(outOfStock / totalProducts) * 100}%`;
+    }
 }
 
-// Actualizar tabla de productos
+// Función para actualizar la tabla de productos
 function updateProductsTable() {
-    // Implementación en inventario.html
+    const tbody = document.querySelector('#productsTable tbody');
+    tbody.innerHTML = '';
+    
+    if (products.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center">No hay productos registrados</td></tr>';
+        return;
+    }
+    
+    products.forEach(product => {
+        const row = document.createElement('tr');
+        const stockClass = product.stock <= product.min_stock ? 
+            (product.stock === 0 ? 'table-danger' : 'table-warning') : '';
+        
+        row.className = stockClass;
+        
+        row.innerHTML = `
+            <td>${product.code || '-'}</td>
+            <td>${product.name}</td>
+            <td>${product.category || '-'}</td>
+            <td>${formatNumber(product.stock)}${product.unit ? ' ' + product.unit : ''}</td>
+            <td>${formatCurrency(product.purchase_price)}</td>
+            <td>${formatCurrency(product.sale_price)}</td>
+            <td>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-info btn-custom" onclick="viewProduct('${product.id}')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-warning btn-custom" onclick="editProduct('${product.id}')">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-danger btn-custom" onclick="deleteProduct('${product.id}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+// Función para actualizar la tabla de compras
+function updatePurchasesTable() {
+    const tbody = document.querySelector('#purchasesTable tbody');
+    tbody.innerHTML = '';
+    
+    if (!window.purchases || window.purchases.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center">No hay compras registradas</td></tr>';
+        return;
+    }
+    
+    window.purchases.forEach(purchase => {
+        const row = document.createElement('tr');
+        
+        row.innerHTML = `
+            <td>${purchase.invoice_number || '-'}</td>
+            <td>${purchase.supplier ? purchase.supplier.name : '-'}</td>
+            <td>${formatDate(purchase.date)}</td>
+            <td>${formatCurrency(purchase.total)}</td>
+            <td>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-info btn-custom" onclick="viewPurchase('${purchase.id}')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-secondary btn-custom" onclick="printPurchase('${purchase.id}')">
+                        <i class="fas fa-print"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+// Función para actualizar la tabla de ventas
+function updateSalesTable() {
+    const tbody = document.querySelector('#salesTable tbody');
+    tbody.innerHTML = '';
+    
+    if (!window.sales || window.sales.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center">No hay ventas registradas</td></tr>';
+        return;
+    }
+    
+    window.sales.forEach(sale => {
+        const row = document.createElement('tr');
+        
+        row.innerHTML = `
+            <td>${sale.invoice_number || '-'}</td>
+            <td>${sale.client ? sale.client.name : '-'}</td>
+            <td>${formatDate(sale.date)}</td>
+            <td>${formatCurrency(sale.total)}</td>
+            <td>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-info btn-custom" onclick="viewSale('${sale.id}')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-secondary btn-custom" onclick="printSale('${sale.id}')">
+                        <i class="fas fa-print"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+// Funciones de utilidad para formateo
+function formatCurrency(amount) {
+    return '$' + parseFloat(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+}
+
+function formatNumber(num) {
+    return parseFloat(num).toFixed(2).replace(/\.00$/, '');
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', {
+        year: 'numeric', 
+        month: '2-digit', 
+        day: '2-digit'
+    });
 } 

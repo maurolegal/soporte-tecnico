@@ -144,6 +144,206 @@ export const requireRole = async (allowedRoles = [], redirectUrl = '/unauthorize
 }
 
 // Funciones para clientes
+// API de Inventario
+export const inventoryApi = {
+    // Productos
+    products: {
+        // Obtener todos los productos
+        async getAll() {
+            const { data, error } = await supabase
+                .from('products')
+                .select(`
+                    *,
+                    supplier:suppliers(id, name)
+                `)
+                .order('name', { ascending: true });
+            
+            if (error) throw error;
+            return data;
+        },
+        
+        // Obtener un producto por ID
+        async getById(id) {
+            const { data, error } = await supabase
+                .from('products')
+                .select(`
+                    *,
+                    supplier:suppliers(*)
+                `)
+                .eq('id', id)
+                .single();
+            
+            if (error) throw error;
+            return data;
+        },
+        
+        // Crear un producto
+        async create(productData) {
+            const { data, error } = await supabase
+                .from('products')
+                .insert([productData])
+                .select();
+            
+            if (error) throw error;
+            return data[0];
+        },
+        
+        // Actualizar un producto
+        async update(id, productData) {
+            const { data, error } = await supabase
+                .from('products')
+                .update(productData)
+                .eq('id', id)
+                .select();
+            
+            if (error) throw error;
+            return data[0];
+        },
+        
+        // Eliminar un producto
+        async delete(id) {
+            const { error } = await supabase
+                .from('products')
+                .delete()
+                .eq('id', id);
+            
+            if (error) throw error;
+        },
+        
+        // Buscar productos
+        async search(query) {
+            const { data, error } = await supabase
+                .rpc('search_products', { search_term: query });
+            
+            if (error) throw error;
+            return data;
+        }
+    },
+    
+    // Proveedores
+    suppliers: {
+        // Obtener todos los proveedores
+        async getAll() {
+            const { data, error } = await supabase
+                .from('suppliers')
+                .select('*')
+                .order('name', { ascending: true });
+            
+            if (error) throw error;
+            return data;
+        },
+        
+        // Crear un proveedor
+        async create(supplierData) {
+            const { data, error } = await supabase
+                .from('suppliers')
+                .insert([supplierData])
+                .select();
+            
+            if (error) throw error;
+            return data[0];
+        }
+    },
+    
+    // Compras
+    purchases: {
+        // Obtener todas las compras
+        async getAll() {
+            const { data, error } = await supabase
+                .from('purchases')
+                .select(`
+                    *,
+                    supplier:suppliers(name),
+                    items:purchase_items(
+                        id,
+                        quantity,
+                        unit_price,
+                        total,
+                        product:products(id, name)
+                    )
+                `)
+                .order('date', { ascending: false });
+            
+            if (error) throw error;
+            return data;
+        },
+        
+        // Crear una compra
+        async create(purchaseData, items) {
+            // Iniciar transacción
+            const { data: purchase, error: purchaseError } = await supabase
+                .from('purchases')
+                .insert([purchaseData])
+                .select();
+            
+            if (purchaseError) throw purchaseError;
+            
+            // Agregar los items de la compra
+            const purchaseItems = items.map(item => ({
+                ...item,
+                purchase_id: purchase[0].id
+            }));
+            
+            const { error: itemsError } = await supabase
+                .from('purchase_items')
+                .insert(purchaseItems);
+            
+            if (itemsError) throw itemsError;
+            
+            return purchase[0];
+        }
+    },
+    
+    // Ventas
+    sales: {
+        // Obtener todas las ventas
+        async getAll() {
+            const { data, error } = await supabase
+                .from('sales')
+                .select(`
+                    *,
+                    client:clients(name),
+                    items:sale_items(
+                        id,
+                        quantity,
+                        unit_price,
+                        total,
+                        product:products(id, name)
+                    )
+                `)
+                .order('date', { ascending: false });
+            
+            if (error) throw error;
+            return data;
+        },
+        
+        // Crear una venta
+        async create(saleData, items) {
+            // Iniciar transacción
+            const { data: sale, error: saleError } = await supabase
+                .from('sales')
+                .insert([saleData])
+                .select();
+            
+            if (saleError) throw saleError;
+            
+            // Agregar los items de la venta
+            const saleItems = items.map(item => ({
+                ...item,
+                sale_id: sale[0].id
+            }));
+            
+            const { error: itemsError } = await supabase
+                .from('sale_items')
+                .insert(saleItems);
+            
+            if (itemsError) throw itemsError;
+            
+            return sale[0];
+        }
+    }
+};
+
 export const clientsApi = {
     // Obtener todos los clientes
     async getAll() {

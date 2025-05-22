@@ -1,0 +1,15 @@
+{
+  "name": "techsupport-pro",
+  "version": "1.0.0",
+  "description": "Sistema de gestión de soporte técnico",
+  "main": "index.js",
+  "scripts": {
+    "start": "http-server -p 8080",
+    "migrate": "node db/execute_migrations.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.7",
+    "http-server": "^14.1.1"
+  },
+  "devDependencies": {}
+} 

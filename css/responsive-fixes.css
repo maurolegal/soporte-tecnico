@@ -1,0 +1,187 @@
+/* Correcciones de responsividad para TechSupport Pro */
+
+/* Correcciones para el sidebar */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        max-width: 280px;
+        transform: translateX(-100%);
+        z-index: 1050;
+    }
+    
+    .sidebar.show {
+        transform: translateX(0);
+    }
+    
+    .sidebar-toggle {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1060;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: var(--primary);
+        color: white;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        border: none;
+    }
+    
+    .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 1rem !important;
+    }
+}
+
+/* Correcciones generales para todos los contenidos */
+@media (max-width: 768px) {
+    .col-md-10.ms-auto {
+        margin-left: 0 !important;
+        padding: 1rem !important;
+        width: 100% !important;
+    }
+    
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    h3 {
+        font-size: 1.5rem;
+    }
+    
+    h4 {
+        font-size: 1.3rem;
+    }
+    
+    h5 {
+        font-size: 1.1rem;
+    }
+    
+    .table-responsive {
+        overflow-x: auto;
+    }
+}
+
+/* Correcciones específicas para tarjetas y paneles */
+@media (max-width: 576px) {
+    .card-body {
+        padding: 0.75rem;
+    }
+    
+    .d-flex.justify-content-between {
+        flex-direction: column;
+    }
+    
+    .d-flex.justify-content-between .btn-group,
+    .d-flex.justify-content-between .d-flex.gap-2 {
+        margin-top: 0.5rem;
+        width: 100%;
+    }
+    
+    .d-flex.justify-content-between .d-flex.gap-2 .btn {
+        flex: 1;
+    }
+    
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+}
+
+/* Correcciones para tablas */
+.table-container {
+    overflow-x: auto;
+    width: 100%;
+}
+
+/* Correcciones para modales */
+@media (max-width: 768px) {
+    .modal-dialog.modal-lg,
+    .modal-dialog.modal-xl {
+        max-width: 95%;
+        margin: 0.5rem auto;
+    }
+    
+    .modal-body {
+        padding: 1rem;
+    }
+    
+    .modal-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .modal-footer .btn {
+        margin: 0.25rem 0;
+    }
+}
+
+/* Corrección para formularios en pantallas pequeñas */
+@media (max-width: 576px) {
+    .form-row,
+    .form-group {
+        margin-bottom: 0.5rem;
+    }
+    
+    .input-group {
+        flex-wrap: wrap;
+    }
+    
+    .input-group-text {
+        border-radius: 0.25rem 0.25rem 0 0;
+        width: 100%;
+    }
+    
+    .input-group > .form-control {
+        border-radius: 0 0 0.25rem 0.25rem;
+    }
+}
+
+/* Mejorar visualización de navegación por pestañas */
+@media (max-width: 768px) {
+    .nav-tabs {
+        display: flex;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        border-bottom: none;
+    }
+    
+    .nav-tabs .nav-item {
+        flex: 0 0 auto;
+        white-space: nowrap;
+    }
+    
+    .nav-tabs .nav-link {
+        margin-bottom: 0;
+        border: 1px solid rgba(0, 0, 0, 0.125);
+        border-radius: 0.25rem;
+        margin-right: 0.25rem;
+    }
+}
+
+/* Corrección para botones agrupados */
+@media (max-width: 576px) {
+    .btn-group-custom {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .btn-group-custom .btn {
+        margin-bottom: 0.25rem;
+        border-radius: 0.25rem !important;
+    }
+}
+
+/* Correcciones para el módulo de inventario */
+@media (max-width: 768px) {
+    .card-inventory {
+        margin-bottom: 1rem;
+    }
+    
+    #inventoryTabContent .table {
+        min-width: 800px;
+    }
+} 

@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/responsive-fixes.css">
     <style>
         .card-inventory {
             transition: transform 0.3s;
@@ -242,20 +243,22 @@
                                                placeholder="Buscar por proveedor, factura o fecha...">
                                     </div>
                                 </div>
-                                <table class="table table-custom" id="purchasesTable">
-                                    <thead>
-                                        <tr>
-                                            <th># Factura</th>
-                                            <th>Proveedor</th>
-                                            <th>Fecha</th>
-                                            <th>Total</th>
-                                            <th>Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <!-- Las compras se cargarán dinámicamente -->
-                                    </tbody>
-                                </table>
+                                <div class="table-responsive">
+                                    <table class="table table-custom" id="purchasesTable">
+                                        <thead>
+                                            <tr>
+                                                <th># Factura</th>
+                                                <th>Proveedor</th>
+                                                <th>Fecha</th>
+                                                <th>Total</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Las compras se cargarán dinámicamente -->
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -281,20 +284,22 @@
                                                placeholder="Buscar por cliente, factura o fecha...">
                                     </div>
                                 </div>
-                                <table class="table table-custom" id="salesTable">
-                                    <thead>
-                                        <tr>
-                                            <th># Factura</th>
-                                            <th>Cliente</th>
-                                            <th>Fecha</th>
-                                            <th>Total</th>
-                                            <th>Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <!-- Las ventas se cargarán dinámicamente -->
-                                    </tbody>
-                                </table>
+                                <div class="table-responsive">
+                                    <table class="table table-custom" id="salesTable">
+                                        <thead>
+                                            <tr>
+                                                <th># Factura</th>
+                                                <th>Cliente</th>
+                                                <th>Fecha</th>
+                                                <th>Total</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Las ventas se cargarán dinámicamente -->
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -345,6 +350,28 @@
         let products = [];
         let purchases = [];
         let sales = [];
+
+        // Exponer funciones al objeto global window
+        window.showAddProductModal = showAddProductModal;
+        window.saveProduct = saveProduct;
+        window.viewProduct = function(id) {
+            console.log('Ver producto:', id);
+            // Implementar visualización de producto
+        };
+        window.editProduct = function(id) {
+            console.log('Editar producto:', id);
+            // Implementar edición de producto
+        };
+        window.deleteProduct = function(id) {
+            console.log('Eliminar producto:', id);
+            // Implementar eliminación de producto
+        };
+        
+        // Actualizar tablas
+        window.updateProductsTable = function() {
+            // Esta función debe ser definida para que esté disponible para el filtrado
+            console.log('Actualizando tabla de productos');
+        };
 
         // Cargar datos al iniciar
         document.addEventListener('DOMContentLoaded', async () => {
@@ -404,9 +431,6 @@
             // Implementar exportación
             console.log('Exportar productos a Excel');
         };
-        
-        // Exponer funciones al objeto global window
-        window.saveProduct = saveProduct;
     </script>
 
     <!-- Funciones comunes de navegación -->
@@ -453,11 +477,14 @@
         }
     }
     
-    // Manejar el estado del tema oscuro
+    // Manejar el estado del tema oscuro    
     function loadThemePreference() {
         const darkMode = localStorage.getItem('darkMode') === 'true';
         document.body.classList.toggle('dark-mode', darkMode);
     }
     </script>
+    
+    <!-- Script de responsividad -->
+    <script src="js/responsive.js"></script>
 </body>
 </html>
