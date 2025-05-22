@@ -283,26 +283,9 @@ async function registerInitialPurchase(productId, productData) {
     };
     
     try {
-        // Insertar la compra
-        const { data: purchaseData, error: purchaseError } = await supabase
-            .from('purchases')
-            .insert([purchase])
-            .select();
-            
-        if (purchaseError) throw purchaseError;
-        
-        // Insertar el detalle de la compra
-        const purchaseDetail = {
-            purchase_id: purchaseData[0].id,
-            ...purchaseItem
-        };
-        
-        const { error: detailError } = await supabase
-            .from('purchase_items')
-            .insert([purchaseDetail]);
-            
-        if (detailError) throw detailError;
-        
+        // Usar la API de inventario en lugar de llamar a supabase directamente
+        const purchaseData = await inventoryApi.purchases.create(purchase, [purchaseItem]);
+        console.log('Compra inicial registrada:', purchaseData);
     } catch (error) {
         console.error('Error al registrar compra inicial:', error);
         // No bloqueamos el flujo principal si esto falla

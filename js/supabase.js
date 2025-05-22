@@ -7,16 +7,54 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 
 let supabase;
 
-try {
-  // Usamos el objeto global Supabase en lugar de la importación
-  supabase = Supabase.createClient(supabaseUrl, supabaseKey);
-  console.log('supabase client initialized successfully');
-} catch (error) {
-  console.error('Error initializing supabase client:', error);
-  // Provide fallback for testing
+// Comprobación si estamos en un entorno de navegador donde se cargó Supabase desde CDN
+if (typeof window !== 'undefined' && window.Supabase) {
+  try {
+    // Usamos el objeto global Supabase disponible en la CDN
+    supabase = window.Supabase.createClient(supabaseUrl, supabaseKey);
+    console.log('supabase client initialized successfully using CDN');
+  } catch (error) {
+    console.error('Error initializing supabase client:', error);
+    createFallbackClient();
+  }
+} else {
+  console.warn('Supabase not available, using fallback client');
+  createFallbackClient();
+}
+
+// Función para crear un cliente fallback con todos los métodos necesarios
+function createFallbackClient() {
   supabase = {
-    auth: { signInWithPassword: async () => ({}) },
-    from: () => ({ select: () => ({ data: [], error: null }) })
+    auth: { 
+      signInWithPassword: async () => ({}),
+      signOut: async () => ({}),
+      getUser: async () => ({ data: { user: null } }) 
+    },
+    from: (table) => ({
+      select: (query) => ({ 
+        data: [], 
+        error: null,
+        eq: () => ({ data: [], error: null, single: () => ({ data: null, error: null }) }),
+        order: () => ({ data: [], error: null }),
+        limit: () => ({ data: [], error: null })
+      }),
+      insert: (data) => ({ data: data, error: null, select: () => ({ data: data, error: null }) }),
+      update: (data) => ({ data: data, error: null, eq: () => ({ data: data, error: null, select: () => ({ data: data, error: null }) }) }),
+      delete: () => ({ error: null, eq: () => ({ error: null }) }),
+      eq: () => ({
+        single: () => ({ data: null, error: null }),
+        delete: () => ({ error: null }),
+        select: () => ({ data: [], error: null })
+      }),
+      or: () => ({ data: [], error: null, order: () => ({ data: [], error: null }) })
+    }),
+    storage: {
+      from: (bucket) => ({
+        upload: async () => ({ data: { path: '' }, error: null }),
+        getPublicUrl: () => ({ data: { publicUrl: '' } })
+      })
+    },
+    rpc: () => ({ data: [], error: null })
   };
 }
 
