@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechSupport Pro | Dashboard</title>
+    
+    <!-- Bootstrap 5 + Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Chart.js + ApexCharts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 sidebar p-0">
+                <div class="p-4">
+                    <h4 class="text-white mb-4">
+                        <i class="fas fa-tools me-2"></i>TechSupport Pro
+                    </h4>
+                    
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html" id="nav-dashboard">
+                                <i class="fas fa-chart-line"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="soporte.html" id="nav-soporte">
+                                <i class="fas fa-laptop-medical"></i> Soporte
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="cotizaciones.html" id="nav-cotizaciones">
+                                <i class="fas fa-file-invoice-dollar"></i> Cotizaciones
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="facturas.html" id="nav-facturas">
+                                <i class="fas fa-receipt"></i> Facturas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="inventario.html" id="nav-inventario">
+                                <i class="fas fa-boxes"></i> Inventario
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="directorio.html" id="nav-directorio">
+                                <i class="fas fa-address-book"></i> Directorio
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="ajustes.html" id="nav-ajustes">
+                                <i class="fas fa-cog"></i> Ajustes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="roles.html" id="nav-roles">
+                                <i class="fas fa-users-cog"></i> Roles
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-10 ms-auto p-4">
+                <!-- Top Stats -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card card-dashboard fade-in">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="text-muted mb-1">Órdenes Activas</h6>
+                                        <h3 class="mb-0">24</h3>
+                                        <small class="text-success"><i class="fas fa-arrow-up me-1"></i> 12%</small>
+                                    </div>
+                                    <div class="bg-primary bg-opacity-10 p-3 rounded">
+                                        <i class="fas fa-tasks text-primary"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="card card-dashboard fade-in">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="text-muted mb-1">Ingresos Mensuales</h6>
+                                        <h3 class="mb-0">$3,450</h3>
+                                        <small class="text-success"><i class="fas fa-arrow-up me-1"></i> 8%</small>
+                                    </div>
+                                    <div class="bg-success bg-opacity-10 p-3 rounded">
+                                        <i class="fas fa-dollar-sign text-success"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="card card-dashboard fade-in">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="text-muted mb-1">Clientes Nuevos</h6>
+                                        <h3 class="mb-0">15</h3>
+                                        <small class="text-success"><i class="fas fa-arrow-up me-1"></i> 5%</small>
+                                    </div>
+                                    <div class="bg-warning bg-opacity-10 p-3 rounded">
+                                        <i class="fas fa-users text-warning"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="card card-dashboard fade-in">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="text-muted mb-1">Satisfacción</h6>
+                                        <h3 class="mb-0">95%</h3>
+                                        <small class="text-success"><i class="fas fa-arrow-up me-1"></i> 2%</small>
+                                    </div>
+                                    <div class="bg-info bg-opacity-10 p-3 rounded">
+                                        <i class="fas fa-smile text-info"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <div class="card card-dashboard fade-in">
+                            <div class="card-header bg-white">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Análisis de Ventas</h5>
+                                    <select class="form-select form-select-sm form-control-custom w-auto">
+                                        <option>Este Mes</option>
+                                        <option>Último Mes</option>
+                                        <option>Este Año</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="salesChart" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card card-dashboard fade-in">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">Tipos de Servicios</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="servicesChart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card card-dashboard fade-in">
+                            <div class="card-header bg-white">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Actividad Reciente</h5>
+                                    <button class="btn btn-primary btn-sm btn-custom">
+                                        Ver Todo
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-custom">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Cliente</th>
+                                            <th>Servicio</th>
+                                            <th>Estado</th>
+                                            <th>Fecha</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>#1234</td>
+                                            <td>Juan Pérez</td>
+                                            <td>Reparación PC</td>
+                                            <td><span class="status-badge status-en-proceso">En Proceso</span></td>
+                                            <td>2024-03-20</td>
+                                        </tr>
+                                        <tr>
+                                            <td>#1235</td>
+                                            <td>María García</td>
+                                            <td>Actualización Software</td>
+                                            <td><span class="status-badge status-resuelto">Completado</span></td>
+                                            <td>2024-03-19</td>
+                                        </tr>
+                                        <tr>
+                                            <td>#1236</td>
+                                            <td>Carlos López</td>
+                                            <td>Mantenimiento</td>
+                                            <td><span class="status-badge status-nuevo">Nuevo</span></td>
+                                            <td>2024-03-18</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Charts Initialization -->
+    <script>
+        // Ventas Chart
+        const salesCtx = document.getElementById('salesChart').getContext('2d');
+        new Chart(salesCtx, {
+            type: 'line',
+            data: {
+                labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Ventas 2024',
+                    data: [2500, 3200, 3500, 4500, 4200, 5500],
+                    borderColor: '#2962FF',
+                    tension: 0.3,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Servicios Chart
+        const servicesOptions = {
+            series: [44, 55, 13, 43],
+            chart: {
+                type: 'donut',
+                height: 300
+            },
+            labels: ['Reparaciones', 'Mantenimiento', 'Consultas', 'Otros'],
+            colors: ['#2962FF', '#4BB543', '#FFA500', '#FF3333'],
+            legend: {
+                position: 'bottom'
+            }
+        };
+
+        const servicesChart = new ApexCharts(document.querySelector("#servicesChart"), servicesOptions);
+        servicesChart.render();
+    </script>
+
+    <!-- Script de activación automática -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var current = window.location.pathname.split('/').pop().toLowerCase();
+        var links = document.querySelectorAll('#sidebarMenu .nav-link');
+        links.forEach(function(link) {
+            var href = link.getAttribute('href').toLowerCase();
+            if (href === current) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    });
+    </script>
+
+    <!-- Función para manejar la navegación activa -->
+    <script>
+    function setActiveNavItem() {
+        // Obtener el nombre del archivo actual
+        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        
+        // Remover la clase active de todos los enlaces
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+        });
+        
+        // Agregar la clase active al enlace correspondiente
+        let navId = '';
+        switch(currentPage) {
+            case 'index.html':
+                navId = 'nav-dashboard';
+                break;
+            case 'soporte.html':
+                navId = 'nav-soporte';
+                break;
+            case 'cotizaciones.html':
+                navId = 'nav-cotizaciones';
+                break;
+            case 'facturas.html':
+                navId = 'nav-facturas';
+                break;
+            case 'inventario.html':
+                navId = 'nav-inventario';
+                break;
+            case 'directorio.html':
+                navId = 'nav-directorio';
+                break;
+            case 'ajustes.html':
+                navId = 'nav-ajustes';
+                break;
+        }
+        
+        const activeLink = document.getElementById(navId);
+        if (activeLink) {
+            activeLink.classList.add('active');
+        }
+    }
+
+    // Agregar estos estilos para el menú
+    document.head.insertAdjacentHTML('beforeend', `
+        <style>
+            .sidebar {
+                background-color: #2c3e50;
+                min-height: 100vh;
+                position: fixed;
+                top: 0;
+                left: 0;
+                z-index: 100;
+            }
+            
+            .nav-link {
+                color: rgba(255,255,255,0.7);
+                padding: 0.8rem 1rem;
+                margin-bottom: 0.2rem;
+                border-radius: 0.3rem;
+                transition: all 0.3s ease;
+            }
+            
+            .nav-link:hover {
+                color: white;
+                background-color: rgba(255,255,255,0.1);
+                transform: translateX(5px);
+            }
+            
+            .nav-link.active {
+                color: white;
+                background-color: rgba(255,255,255,0.2);
+            }
+            
+            .nav-link i {
+                width: 20px;
+                margin-right: 10px;
+                text-align: center;
+            }
+            
+            /* Ajuste para el contenido principal */
+            .main-content {
+                margin-left: 16.666667%; /* col-md-2 */
+            }
+        </style>
+    `);
+
+    // Ejecutar cuando el DOM esté cargado
+    document.addEventListener('DOMContentLoaded', setActiveNavItem);
+
+    // Manejar el estado del tema oscuro
+    function loadThemePreference() {
+        const darkMode = localStorage.getItem('darkMode') === 'true';
+        document.body.classList.toggle('dark-mode', darkMode);
+    }
+
+    // Cargar preferencia de tema al inicio
+    loadThemePreference();
+    </script>
+
+    <!-- Agregar en ajustes.html -->
+    <script>
+    document.getElementById('darkModeSwitch').addEventListener('change', function() {
+        document.body.classList.toggle('dark-mode', this.checked);
+        localStorage.setItem('darkMode', this.checked);
+    });
+    </script>
+</body>
+</html>

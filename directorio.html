@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechSupport Pro | Directorio de Clientes</title>
+    
+    <!-- Bootstrap 5 + Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+    .list-group-item {
+        transition: all 0.3s ease;
+    }
+
+    .list-group-item:hover {
+        transform: translateX(5px);
+    }
+
+    .list-group-item.border-danger {
+        border-width: 2px;
+    }
+
+    .badge {
+        font-size: 0.8em;
+        padding: 0.4em 0.6em;
+    }
+
+    .btn-group .btn-custom {
+        position: relative;
+    }
+
+    .btn-group .btn-custom:hover::after {
+        content: attr(data-title);
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 5px;
+        background: rgba(0,0,0,0.8);
+        color: white;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 sidebar p-0">
+                <div class="p-4">
+                    <h4 class="text-white mb-4">
+                        <i class="fas fa-tools me-2"></i>TechSupport Pro
+                    </h4>
+                    
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html" id="nav-dashboard">
+                                <i class="fas fa-chart-line"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="soporte.html" id="nav-soporte">
+                                <i class="fas fa-laptop-medical"></i> Soporte
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="cotizaciones.html" id="nav-cotizaciones">
+                                <i class="fas fa-file-invoice-dollar"></i> Cotizaciones
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="facturas.html" id="nav-facturas">
+                                <i class="fas fa-receipt"></i> Facturas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="inventario.html" id="nav-inventario">
+                                <i class="fas fa-boxes"></i> Inventario
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="directorio.html" id="nav-directorio">
+                                <i class="fas fa-address-book"></i> Directorio
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="ajustes.html" id="nav-ajustes">
+                                <i class="fas fa-cog"></i> Ajustes
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-10 ms-auto p-4">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h4 class="fade-in"><i class="fas fa-address-book me-2"></i>Directorio de Clientes</h4>
+                    </div>
+                </div>
+
+                <!-- Resumen de Clientes -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card card-support fade-in">
+                            <div class="card-body">
+                                <h6 class="text-muted">Clientes Totales</h6>
+                                <h3>128</h3>
+                                <div class="progress progress-custom">
+                                    <div class="progress-bar progress-bar-custom bg-primary" style="width: 100%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card card-support fade-in">
+                            <div class="card-body">
+                                <h6 class="text-muted">Clientes Activos</h6>
+                                <h3>98</h3>
+                                <div class="progress progress-custom">
+                                    <div class="progress-bar progress-bar-custom bg-success" style="width: 76%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card card-support fade-in">
+                            <div class="card-body">
+                                <h6 class="text-muted">Clientes Recientes</h6>
+                                <h3>12</h3>
+                                <div class="progress progress-custom">
+                                    <div class="progress-bar progress-bar-custom bg-info" style="width: 9%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card card-support fade-in">
+                            <div class="card-body">
+                                <h6 class="text-muted">Clientes Inactivos</h6>
+                                <h3>30</h3>
+                                <div class="progress progress-custom">
+                                    <div class="progress-bar progress-bar-custom bg-warning" style="width: 24%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alertas de Soporte -->
+                <div class="col-md-6 mb-4">
+                    <div class="card card-support fade-in">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Alertas de Soporte</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <button class="btn btn-primary btn-sm" onclick="createSupportAlert()">
+                                    <i class="fas fa-plus me-1"></i>Nueva Alerta
+                                </button>
+                            </div>
+                            <div id="supportAlertsList" class="list-group">
+                                <!-- Las alertas se cargarán dinámicamente -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabla de Clientes -->
+                <div class="card card-support fade-in mb-4">
+                    <div class="card-header bg-white">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">Lista de Clientes</h5>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-success btn-sm btn-custom" onclick="exportToExcel()">
+                                    <i class="fas fa-file-excel me-1"></i>Exportar
+                                </button>
+                                <button class="btn btn-primary btn-sm btn-custom" onclick="addNewClient()">
+                                    <i class="fas fa-plus me-1"></i>Nuevo Cliente
+                                </button>
+                            </div>
+                        </div>
+                        <div class="search-container">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0">
+                                    <i class="fas fa-search text-muted"></i>
+                                </span>
+                                <input type="text" 
+                                       class="form-control form-control-custom border-start-0" 
+                                       id="searchClient" 
+                                       placeholder="Buscar por nombre, teléfono o correo..."
+                                       onkeyup="searchClients()">
+                            </div>
+                            <div class="mt-2">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="searchName" checked>
+                                    <label class="form-check-label" for="searchName">Nombre</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="searchPhone" checked>
+                                    <label class="form-check-label" for="searchPhone">Teléfono</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="searchEmail" checked>
+                                    <label class="form-check-label" for="searchEmail">Correo</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-custom" id="clientsTable">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nombre</th>
+                                        <th>Teléfono</th>
+                                        <th>Correo</th>
+                                        <th>Dirección</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>#CL001</td>
+                                        <td>Ana Martínez</td>
+                                        <td>+1234567890</td>
+                                        <td>ana@email.com</td>
+                                        <td>Av. Principal #123</td>
+                                        <td><span class="status-badge status-activo">Activo</span></td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-info btn-custom" onclick="viewClient('CL001')">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn btn-warning btn-custom" onclick="editClient('CL001')">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-danger btn-custom" onclick="deleteClient('CL001')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                                <button class="btn btn-primary btn-custom" onclick="createClientReminder('CL001', 'Ana Martínez')">
+                                                    <i class="fas fa-bell"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!-- Más filas de ejemplo -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ver/Editar Cliente -->
+    <div class="modal fade" id="clientModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Crear Alerta de Soporte -->
+    <div class="modal fade" id="createAlertModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Crear Alerta de Soporte</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Cliente</label>
+                        <input type="text" class="form-control" id="alertClient">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Equipo</label>
+                        <input type="text" class="form-control" id="alertEquipment">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Fecha Programada</label>
+                        <input type="date" class="form-control" id="alertDate">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Soporte</label>
+                        <select class="form-select" id="alertType">
+                            <option value="mantenimiento">Mantenimiento Preventivo</option>
+                            <option value="revision">Revisión General</option>
+                            <option value="actualizacion">Actualización de Software</option>
+                            <option value="garantia">Revisión de Garantía</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea class="form-control" id="alertDescription" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Prioridad</label>
+                        <select class="form-select" id="alertPriority">
+                            <option value="baja">Baja</option>
+                            <option value="media">Media</option>
+                            <option value="alta">Alta</option>
+                            <option value="urgente">Urgente</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="saveAlert()">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Recordatorio de Cliente -->
+    <div class="modal fade" id="clientReminderModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Programar Recordatorio de Soporte</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Cliente</label>
+                        <input type="text" class="form-control" id="reminderClientName" readonly>
+                        <input type="hidden" id="reminderClientId">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Fecha de Servicio</label>
+                        <input type="date" class="form-control" id="reminderDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Servicio</label>
+                        <select class="form-select" id="reminderServiceType">
+                            <option value="mantenimiento_preventivo">Mantenimiento Preventivo</option>
+                            <option value="mantenimiento_correctivo">Mantenimiento Correctivo</option>
+                            <option value="actualizacion">Actualización de Software</option>
+                            <option value="revision">Revisión General</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Prioridad</label>
+                        <select class="form-select" id="reminderPriority">
+                            <option value="baja">Baja</option>
+                            <option value="media">Media</option>
+                            <option value="alta">Alta</option>
+                            <option value="urgente">Urgente</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notificar con Anticipación</label>
+                        <select class="form-select" id="reminderNotification">
+                            <option value="1">1 día antes</option>
+                            <option value="3">3 días antes</option>
+                            <option value="7">1 semana antes</option>
+                            <option value="15">15 días antes</option>
+                            <option value="30">1 mes antes</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notas Adicionales</label>
+                        <textarea class="form-control" id="reminderNotes" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="saveClientReminder()">Guardar Recordatorio</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Función para crear alerta de soporte
+    function createSupportAlert() {
+        // Establecer fecha mínima como hoy
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('alertDate').min = today;
+        document.getElementById('alertDate').value = today;
+        
+        const modal = new bootstrap.Modal(document.getElementById('createAlertModal'));
+        modal.show();
+    }
+
+    // Función para guardar alerta
+    function saveAlert() {
+        const client = document.getElementById('alertClient').value;
+        const equipment = document.getElementById('alertEquipment').value;
+        const date = document.getElementById('alertDate').value;
+        const type = document.getElementById('alertType').value;
+        const description = document.getElementById('alertDescription').value;
+        const priority = document.getElementById('alertPriority').value;
+
+        // Aquí iría la lógica para guardar la alerta
+        addAlertToList({
+            client,
+            equipment,
+            date,
+            type,
+            description,
+            priority
+        });
+
+        const modal = bootstrap.Modal.getInstance(document.getElementById('createAlertModal'));
+        modal.hide();
+    }
+
+    // Función para agregar alerta a la lista
+    function addAlertToList(alert) {
+        const container = document.getElementById('supportAlertsList');
+        const alertElement = document.createElement('div');
+        alertElement.className = `list-group-item list-group-item-action ${getPriorityClass(alert.priority)}`;
+        alertElement.innerHTML = `
+            <div class="d-flex w-100 justify-content-between">
+                <h6 class="mb-1">${alert.client} - ${alert.equipment}</h6>
+                <small>${formatDate(alert.date)}</small>
+            </div>
+            <p class="mb-1">${alert.description}</p>
+            <small>
+                <span class="badge bg-info">${alert.type}</span>
+                <span class="badge ${getPriorityBadge(alert.priority)}">${alert.priority}</span>
+            </small>
+            <button class="btn btn-sm btn-danger float-end" onclick="this.parentElement.remove()">
+                <i class="fas fa-trash"></i>
+            </button>
+        `;
+        container.prepend(alertElement);
+    }
+
+    // Función para obtener clase según prioridad
+    function getPriorityClass(priority) {
+        const classes = {
+            'baja': 'list-group-item-light',
+            'media': 'list-group-item-warning',
+            'alta': 'list-group-item-danger',
+            'urgente': 'list-group-item-danger border-danger'
+        };
+        return classes[priority] || 'list-group-item-light';
+    }
+
+    // Función para obtener badge según prioridad
+    function getPriorityBadge(priority) {
+        const badges = {
+            'baja': 'bg-secondary',
+            'media': 'bg-warning',
+            'alta': 'bg-danger',
+            'urgente': 'bg-danger'
+        };
+        return badges[priority] || 'bg-secondary';
+    }
+
+    // Función para formatear fecha
+    function formatDate(date) {
+        return new Date(date).toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    }
+
+    // Función para crear recordatorio de cliente
+    function createClientReminder(clientId, clientName) {
+        // Establecer fecha mínima como hoy
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('reminderDate').min = today;
+        document.getElementById('reminderDate').value = today;
+        
+        // Establecer datos del cliente
+        document.getElementById('reminderClientId').value = clientId;
+        document.getElementById('reminderClientName').value = clientName;
+        
+        // Mostrar modal
+        const modal = new bootstrap.Modal(document.getElementById('clientReminderModal'));
+        modal.show();
+    }
+
+    // Función para guardar recordatorio
+    function saveClientReminder() {
+        const reminder = {
+            clientId: document.getElementById('reminderClientId').value,
+            clientName: document.getElementById('reminderClientName').value,
+            date: document.getElementById('reminderDate').value,
+            serviceType: document.getElementById('reminderServiceType').value,
+            priority: document.getElementById('reminderPriority').value,
+            notification: document.getElementById('reminderNotification').value,
+            notes: document.getElementById('reminderNotes').value,
+            status: 'pendiente'
+        };
+
+        // Agregar a la lista de alertas
+        addReminderToAlertsList(reminder);
+
+        // Cerrar modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('clientReminderModal'));
+        modal.hide();
+
+        // Mostrar notificación de éxito
+        showNotification('Recordatorio creado exitosamente', 'success');
+    }
+
+    // Función para agregar recordatorio a la lista de alertas
+    function addReminderToAlertsList(reminder) {
+        const container = document.getElementById('supportAlertsList');
+        const reminderElement = document.createElement('div');
+        reminderElement.className = `list-group-item list-group-item-action ${getPriorityClass(reminder.priority)}`;
+        
+        const notificationDate = calculateNotificationDate(reminder.date, reminder.notification);
+        
+        reminderElement.innerHTML = `
+            <div class="d-flex w-100 justify-content-between">
+                <h6 class="mb-1">${reminder.clientName}</h6>
+                <small>Servicio: ${formatDate(reminder.date)}</small>
+            </div>
+            <p class="mb-1">${reminder.notes || 'Sin notas adicionales'}</p>
+            <small>
+                <span class="badge bg-info">${formatServiceType(reminder.serviceType)}</span>
+                <span class="badge ${getPriorityBadge(reminder.priority)}">${reminder.priority}</span>
+                <span class="badge bg-secondary">Notificar: ${formatDate(notificationDate)}</span>
+            </small>
+            <div class="mt-2">
+                <button class="btn btn-sm btn-success" onclick="markReminderComplete(this)">
+                    <i class="fas fa-check"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="this.parentElement.parentElement.remove()">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+        
+        container.prepend(reminderElement);
+    }
+
+    // Función para calcular fecha de notificación
+    function calculateNotificationDate(serviceDate, daysBeforeNotification) {
+        const date = new Date(serviceDate);
+        date.setDate(date.getDate() - parseInt(daysBeforeNotification));
+        return date;
+    }
+
+    // Función para formatear tipo de servicio
+    function formatServiceType(type) {
+        const types = {
+            'mantenimiento_preventivo': 'Mant. Preventivo',
+            'mantenimiento_correctivo': 'Mant. Correctivo',
+            'actualizacion': 'Actualización',
+            'revision': 'Revisión',
+            'otro': 'Otro'
+        };
+        return types[type] || type;
+    }
+
+    // Función para marcar recordatorio como completado
+    function markReminderComplete(button) {
+        const reminderElement = button.parentElement.parentElement;
+        reminderElement.classList.add('list-group-item-success');
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-check-double"></i>';
+    }
+
+    // Función para mostrar notificaciones
+    function showNotification(message, type = 'info') {
+        // Aquí puedes implementar tu sistema de notificaciones preferido
+        alert(message); // Implementación básica
+    }
+
+    // Gestión de Clientes
+    let clients = JSON.parse(localStorage.getItem('clients')) || [];
+
+    // Cargar clientes al iniciar
+    function loadClients() {
+        const tbody = document.querySelector('#clientsTable tbody');
+        tbody.innerHTML = '';
+        
+        clients.forEach(client => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>#${client.id}</td>
+                <td>${client.name}</td>
+                <td>${client.phone}</td>
+                <td>${client.email}</td>
+                <td>${client.address}</td>
+                <td><span class="status-badge status-${client.status.toLowerCase()}">${client.status}</span></td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-info btn-custom" onclick="viewClient('${client.id}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-warning btn-custom" onclick="editClient('${client.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-custom" onclick="deleteClient('${client.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <button class="btn btn-primary btn-custom" onclick="createClientReminder('${client.id}', '${client.name}')">
+                            <i class="fas fa-bell"></i>
+                        </button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    // Agregar nuevo cliente
+    function addNewClient() {
+        const modal = document.getElementById('clientModal');
+        modal.querySelector('.modal-content').innerHTML = `
+            <div class="modal-header">
+                <h5 class="modal-title">Nuevo Cliente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="clientForm">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="clientName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Teléfono</label>
+                        <input type="tel" class="form-control" id="clientPhone" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Correo</label>
+                        <input type="email" class="form-control" id="clientEmail" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Dirección</label>
+                        <input type="text" class="form-control" id="clientAddress" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Estado</label>
+                        <select class="form-select" id="clientStatus">
+                            <option value="Activo">Activo</option>
+                            <option value="Inactivo">Inactivo</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="saveNewClient()">Guardar</button>
+            </div>
+        `;
+        
+        const modalInstance = new bootstrap.Modal(modal);
+        modalInstance.show();
+    }
+
+    // Guardar nuevo cliente
+    function saveNewClient() {
+        const form = document.getElementById('clientForm');
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        const newClient = {
+            id: 'CL' + (clients.length + 1).toString().padStart(3, '0'),
+            name: document.getElementById('clientName').value,
+            phone: document.getElementById('clientPhone').value,
+            email: document.getElementById('clientEmail').value,
+            address: document.getElementById('clientAddress').value,
+            status: document.getElementById('clientStatus').value
+        };
+
+        clients.push(newClient);
+        localStorage.setItem('clients', JSON.stringify(clients));
+        loadClients();
+
+        const modal = bootstrap.Modal.getInstance(document.getElementById('clientModal'));
+        modal.hide();
+        showNotification('Cliente agregado exitosamente', 'success');
+    }
+
+    // Ver cliente
+    function viewClient(clientId) {
+        const client = clients.find(c => c.id === clientId);
+        if (!client) return;
+
+        const modal = document.getElementById('clientModal');
+        modal.querySelector('.modal-content').innerHTML = `
+            <div class="modal-header">
+                <h5 class="modal-title">Detalles del Cliente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-4"><strong>ID:</strong></div>
+                    <div class="col-8">#${client.id}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-4"><strong>Nombre:</strong></div>
+                    <div class="col-8">${client.name}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-4"><strong>Teléfono:</strong></div>
+                    <div class="col-8">${client.phone}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-4"><strong>Correo:</strong></div>
+                    <div class="col-8">${client.email}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-4"><strong>Dirección:</strong></div>
+                    <div class="col-8">${client.address}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-4"><strong>Estado:</strong></div>
+                    <div class="col-8">
+                        <span class="status-badge status-${client.status.toLowerCase()}">${client.status}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        `;
+        
+        const modalInstance = new bootstrap.Modal(modal);
+        modalInstance.show();
+    }
+
+    // Editar cliente
+    function editClient(clientId) {
+        const client = clients.find(c => c.id === clientId);
+        if (!client) return;
+
+        const modal = document.getElementById('clientModal');
+        modal.querySelector('.modal-content').innerHTML = `
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Cliente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="clientForm">
+                    <input type="hidden" id="clientId" value="${client.id}">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="clientName" value="${client.name}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Teléfono</label>
+                        <input type="tel" class="form-control" id="clientPhone" value="${client.phone}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Correo</label>
+                        <input type="email" class="form-control" id="clientEmail" value="${client.email}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Dirección</label>
+                        <input type="text" class="form-control" id="clientAddress" value="${client.address}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Estado</label>
+                        <select class="form-select" id="clientStatus">
+                            <option value="Activo" ${client.status === 'Activo' ? 'selected' : ''}>Activo</option>
+                            <option value="Inactivo" ${client.status === 'Inactivo' ? 'selected' : ''}>Inactivo</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="saveEditedClient()">Guardar Cambios</button>
+            </div>
+        `;
+        
+        const modalInstance = new bootstrap.Modal(modal);
+        modalInstance.show();
+    }
+
+    // Guardar cliente editado
+    function saveEditedClient() {
+        const form = document.getElementById('clientForm');
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        const clientId = document.getElementById('clientId').value;
+        const clientIndex = clients.findIndex(c => c.id === clientId);
+
+        if (clientIndex !== -1) {
+            clients[clientIndex] = {
+                id: clientId,
+                name: document.getElementById('clientName').value,
+                phone: document.getElementById('clientPhone').value,
+                email: document.getElementById('clientEmail').value,
+                address: document.getElementById('clientAddress').value,
+                status: document.getElementById('clientStatus').value
+            };
+
+            localStorage.setItem('clients', JSON.stringify(clients));
+            loadClients();
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById('clientModal'));
+            modal.hide();
+            showNotification('Cliente actualizado exitosamente', 'success');
+        }
+    }
+
+    // Eliminar cliente
+    function deleteClient(clientId) {
+        if (confirm('¿Está seguro de que desea eliminar este cliente?')) {
+            clients = clients.filter(c => c.id !== clientId);
+            localStorage.setItem('clients', JSON.stringify(clients));
+            loadClients();
+            showNotification('Cliente eliminado exitosamente', 'success');
+        }
+    }
+
+    // Búsqueda de clientes
+    function searchClients() {
+        const searchTerm = document.getElementById('searchClient').value.toLowerCase();
+        const searchName = document.getElementById('searchName').checked;
+        const searchPhone = document.getElementById('searchPhone').checked;
+        const searchEmail = document.getElementById('searchEmail').checked;
+
+        const tbody = document.querySelector('#clientsTable tbody');
+        tbody.innerHTML = '';
+
+        const filteredClients = clients.filter(client => {
+            return (searchName && client.name.toLowerCase().includes(searchTerm)) ||
+                   (searchPhone && client.phone.toLowerCase().includes(searchTerm)) ||
+                   (searchEmail && client.email.toLowerCase().includes(searchTerm));
+        });
+
+        filteredClients.forEach(client => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>#${client.id}</td>
+                <td>${client.name}</td>
+                <td>${client.phone}</td>
+                <td>${client.email}</td>
+                <td>${client.address}</td>
+                <td><span class="status-badge status-${client.status.toLowerCase()}">${client.status}</span></td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-info btn-custom" onclick="viewClient('${client.id}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-warning btn-custom" onclick="editClient('${client.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-custom" onclick="deleteClient('${client.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <button class="btn btn-primary btn-custom" onclick="createClientReminder('${client.id}', '${client.name}')">
+                            <i class="fas fa-bell"></i>
+                        </button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    // Función para manejar la navegación activa
+    function setActiveNavItem() {
+        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+        });
+        
+        const pageToNav = {
+            'index.html': 'nav-dashboard',
+            'soporte.html': 'nav-soporte',
+            'cotizaciones.html': 'nav-cotizaciones',
+            'facturas.html': 'nav-facturas',
+            'inventario.html': 'nav-inventario',
+            'directorio.html': 'nav-directorio',
+            'ajustes.html': 'nav-ajustes'
+        };
+        
+        const navId = pageToNav[currentPage];
+        if (navId) {
+        const activeLink = document.getElementById(navId);
+        if (activeLink) {
+            activeLink.classList.add('active');
+        }
+    }
+    }
+    
+    // Manejar el estado del tema oscuro
+    function loadThemePreference() {
+        const darkMode = localStorage.getItem('darkMode') === 'true';
+        document.body.classList.toggle('dark-mode', darkMode);
+    }
+    
+    // Inicialización cuando el DOM está cargado
+    document.addEventListener('DOMContentLoaded', () => {
+        setActiveNavItem();
+        loadClients();
+    loadThemePreference();
+    });
+    </script>
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

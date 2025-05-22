@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechSupport Pro | Módulo de Soporte</title>
+    
+    <!-- Bootstrap 5 + Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Chart.js + ApexCharts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 sidebar p-0">
+                <div class="p-4">
+                    <h4 class="text-white mb-4">
+                        <i class="fas fa-tools me-2"></i>TechSupport Pro
+                    </h4>
+                    
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html" id="nav-dashboard">
+                                <i class="fas fa-chart-line"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="soporte.html" id="nav-soporte">
+                                <i class="fas fa-laptop-medical"></i> Soporte
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="cotizaciones.html" id="nav-cotizaciones">
+                                <i class="fas fa-file-invoice-dollar"></i> Cotizaciones
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="facturas.html" id="nav-facturas">
+                                <i class="fas fa-receipt"></i> Facturas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="inventario.html" id="nav-inventario">
+                                <i class="fas fa-boxes"></i> Inventario
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="directorio.html" id="nav-directorio">
+                                <i class="fas fa-address-book"></i> Directorio
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="ajustes.html" id="nav-ajustes">
+                                <i class="fas fa-cog"></i> Ajustes
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            
+            <div class="col-md-10 ms-auto p-4">
+                <!-- Sección de Orden de Servicio (oculta inicialmente) -->
+                <div id="orderViewSection" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="mb-0">
+                            <i class="fas fa-clipboard-list me-2"></i>Orden de Servicio #<span id="orderViewNumber"></span>
+                        </h4>
+                        <button class="btn btn-secondary btn-custom" onclick="hideOrderView()">
+                            <i class="fas fa-arrow-left me-2"></i>Volver a la lista
+                        </button>
+                    </div>
+
+                    <div class="row g-4">
+                        <!-- Información del Cliente -->
+                        <div class="col-md-6">
+                            <div class="card card-support">
+                                <div class="card-header bg-white">
+                                    <h6 class="mb-0"><i class="fas fa-user me-2"></i>Información del Cliente</h6>
+                                </div>
+                                <div class="card-body">
+                                    <dl class="row mb-0">
+                                        <dt class="col-sm-4">Nombre:</dt>
+                                        <dd class="col-sm-8">Ana Martínez</dd>
+                                        <dt class="col-sm-4">Teléfono:</dt>
+                                        <dd class="col-sm-8">+1234567890</dd>
+                                        <dt class="col-sm-4">Correo:</dt>
+                                        <dd class="col-sm-8">ana@email.com</dd>
+                                        <dt class="col-sm-4">Dirección:</dt>
+                                        <dd class="col-sm-8">Av. Principal #123, Ciudad</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Información del Equipo -->
+                        <div class="col-md-6">
+                            <div class="card card-support">
+                                <div class="card-header bg-white">
+                                    <h6 class="mb-0"><i class="fas fa-laptop me-2"></i>Detalles del Equipo</h6>
+                                </div>
+                                <div class="card-body">
+                                    <dl class="row mb-0">
+                                        <dt class="col-sm-4">Serie:</dt>
+                                        <dd class="col-sm-8">5CD9876543</dd>
+                                        <dt class="col-sm-4">Marca:</dt>
+                                        <dd class="col-sm-8">HP</dd>
+                                        <dt class="col-sm-4">Modelo:</dt>
+                                        <dd class="col-sm-8">Pavilion 15-dk1056wm</dd>
+                                        <dt class="col-sm-4">Contraseña:</dt>
+                                        <dd class="col-sm-8">user2024*</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Resumen del Servicio -->
+                        <div class="col-md-12">
+                            <div class="card card-support">
+                                <div class="card-header bg-white">
+                                    <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Resumen del Servicio</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <small class="text-muted d-block">Fecha de Ingreso</small>
+                                            <strong>20/03/2024 09:30 AM</strong>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <small class="text-muted d-block">Fecha Est. Entrega</small>
+                                            <strong>22/03/2024 02:00 PM</strong>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <small class="text-muted d-block">Técnico Asignado</small>
+                                            <strong>Luis Técnico</strong>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <small class="text-muted d-block">Costo Estimado</small>
+                                            <strong>$180.00</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Línea de Tiempo y Seguimiento -->
+                        <div class="col-md-12">
+                            <div class="card card-support">
+                                <div class="card-header bg-white">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0"><i class="fas fa-history me-2"></i>Trazabilidad y Seguimiento</h6>
+                                        <button class="btn btn-sm btn-primary btn-custom" onclick="addTimelineEntry()">
+                                            <i class="fas fa-plus me-1"></i>Agregar Seguimiento
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="timeline">
+                                        <div class="timeline-item">
+                                            <div class="timeline-point bg-primary"></div>
+                                            <div class="timeline-content">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <h6 class="mb-1">Recepción del Equipo</h6>
+                                                    <small class="text-muted">20/03/2024 09:30 AM</small>
+                                            </div>
+                                                <p class="mb-0">Se recibe el equipo y se realiza inspección inicial</p>
+                                                <small class="text-muted">Por: Luis Técnico</small>
+                                        </div>
+                                            </div>
+                                        <div class="timeline-item">
+                                            <div class="timeline-point bg-info"></div>
+                                            <div class="timeline-content">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <h6 class="mb-1">Diagnóstico Técnico</h6>
+                                                    <small class="text-muted">20/03/2024 10:15 AM</small>
+                                        </div>
+                                                <p class="mb-0">Se confirma problema en el sistema de ventilación. Se requiere limpieza profunda y posible reemplazo del ventilador.</p>
+                                                <small class="text-muted">Por: Luis Técnico</small>
+                                            </div>
+                                        </div>
+                                        <div class="timeline-item">
+                                            <div class="timeline-point bg-warning"></div>
+                                            <div class="timeline-content">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <h6 class="mb-1">Inicio de Reparación</h6>
+                                                    <small class="text-muted">20/03/2024 11:30 AM</small>
+                                                </div>
+                                                <p class="mb-0">Se comienza el desmontaje para limpieza y revisión del sistema de ventilación</p>
+                                                <small class="text-muted">Por: Luis Técnico</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Imágenes del Equipo -->
+                        <div class="col-md-12">
+                            <div class="card card-support">
+                                <div class="card-header bg-white">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0"><i class="fas fa-images me-2"></i>Imágenes del Equipo</h6>
+                                        <button class="btn btn-sm btn-primary btn-custom" onclick="document.getElementById('uploadImages').click()">
+                                            <i class="fas fa-upload me-1"></i>Subir Imágenes
+                                        </button>
+                                        <input type="file" id="uploadImages" multiple accept="image/*" style="display: none" onchange="handleImageUpload(event)">
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3" id="imageGallery">
+                                        <!-- Las imágenes se cargarán aquí dinámicamente -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Detalles del Servicio -->
+                        <div class="col-md-12">
+                            <div class="card card-support">
+                                <div class="card-header bg-white">
+                                    <h6 class="mb-0"><i class="fas fa-clipboard-check me-2"></i>Detalles del Servicio</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-4">
+                                        <div class="col-md-12">
+                                            <h6 class="text-muted">Descripción del Problema</h6>
+                                            <p>El equipo presenta problemas de sobrecalentamiento y apagados repentinos durante el uso. El ventilador hace ruidos extraños cuando está en funcionamiento.</p>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <h6 class="text-muted">Estado Inicial</h6>
+                                            <p>- Equipo enciende normalmente<br>
+                                               - Ventilador con ruido anormal<br>
+                                               - Temperatura elevada en uso<br>
+                                               - Sin daños físicos visibles</p>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <h6 class="text-muted">Condiciones Físicas</h6>
+                                            <p>- Carcasa en buen estado<br>
+                                               - Pantalla sin rayones<br>
+                                               - Teclado completo y funcional<br>
+                                               - Batería original</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="col-12">
+                            <div class="d-flex justify-content-end gap-2">
+                                <button class="btn btn-primary btn-custom" data-bs-toggle="modal" data-bs-target="#reportModal">
+                                    <i class="fas fa-file-pdf me-2"></i>Generar Reporte
+                                </button>
+                                <button class="btn btn-success btn-custom" data-bs-toggle="modal" data-bs-target="#quoteModal">
+                                    <i class="fas fa-file-invoice me-2"></i>Convertir a Cotización
+                                </button>
+                                <button class="btn btn-info btn-custom" data-bs-toggle="modal" data-bs-target="#invoiceModal">
+                                    <i class="fas fa-file-invoice-dollar me-2"></i>Convertir a Factura
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección Principal (lista de soportes) -->
+            <div id="mainSection">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h4 class="fade-in"><i class="fas fa-laptop-medical me-2"></i>Gestión de Soporte Técnico</h4>
+                    </div>
+                </div>
+
+                <!-- Tickets Overview -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card card-support fade-in">
+                            <div class="card-body">
+                                <h6 class="text-muted">Tickets Nuevos</h6>
+                                <h3>12</h3>
+                                <div class="progress progress-custom">
+                                    <div class="progress-bar progress-bar-custom bg-primary" style="width: 40%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card card-support fade-in">
+                            <div class="card-body">
+                                <h6 class="text-muted">En Proceso</h6>
+                                <h3>8</h3>
+                                <div class="progress progress-custom">
+                                    <div class="progress-bar progress-bar-custom bg-warning" style="width: 60%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card card-support fade-in">
+                            <div class="card-body">
+                                <h6 class="text-muted">Resueltos Hoy</h6>
+                                <h3>5</h3>
+                                <div class="progress progress-custom">
+                                    <div class="progress-bar progress-bar-custom bg-success" style="width: 80%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card card-support fade-in">
+                            <div class="card-body">
+                                <h6 class="text-muted">Tiempo Promedio</h6>
+                                <h3>2.5h</h3>
+                                <div class="progress progress-custom">
+                                    <div class="progress-bar progress-bar-custom bg-info" style="width: 70%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabla de Soportes -->
+                <div class="card card-support fade-in mb-4">
+                    <div class="card-header bg-white">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">Lista de Soportes Técnicos</h5>
+                            <button class="btn btn-primary btn-sm btn-custom" data-bs-toggle="modal" data-bs-target="#newSupportModal">
+                                <i class="fas fa-plus me-1"></i>Nuevo Soporte
+                            </button>
+                        </div>
+                            <div class="search-container">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0">
+                                        <i class="fas fa-search text-muted"></i>
+                                    </span>
+                                    <input type="text" 
+                                           class="form-control form-control-custom border-start-0" 
+                                           id="searchSupport" 
+                                           placeholder="Buscar por nombre, teléfono, correo o ID..."
+                                           onkeyup="searchTable()">
+                                </div>
+                                <div class="mt-2">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="searchName" checked>
+                                        <label class="form-check-label" for="searchName">Nombre</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="searchPhone" checked>
+                                        <label class="form-check-label" for="searchPhone">Teléfono</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="searchEmail" checked>
+                                        <label class="form-check-label" for="searchEmail">Correo</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="searchId" checked>
+                                        <label class="form-check-label" for="searchId">ID</label>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                                <table class="table table-custom" id="supportTable">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Cliente</th>
+                                        <th>Contacto</th>
+                                        <th>Fecha Ingreso</th>
+                                        <th>Costo Est.</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>#ST001</td>
+                                        <td>Ana Martínez</td>
+                                        <td>
+                                            <small class="d-block">📱 +1234567890</small>
+                                            <small class="d-block">📧 ana@email.com</small>
+                                        </td>
+                                        <td>20/03/2024</td>
+                                        <td>$180.00</td>
+                                        <td><span class="status-badge status-nuevo">Pendiente</span></td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                    <button class="btn btn-info btn-custom" onclick="showOrderView('ST001')">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                    <button class="btn btn-warning btn-custom" onclick="editSupport('ST001')">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-danger btn-custom" onclick="confirmDelete('ST001')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                        <!-- Más filas de la tabla aquí -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                                </div>
+                            </div>
+        </div>
+    </div>
+
+    <!-- Modales (solo para acciones específicas) -->
+    <!-- Modal Nuevo Soporte -->
+    <div class="modal fade" id="newSupportModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Nuevo Registro de Soporte</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item">
+                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#clienteTab">
+                                <i class="fas fa-user me-2"></i>Cliente
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#equipoTab">
+                                <i class="fas fa-laptop me-2"></i>Equipo
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content mt-3">
+                        <!-- Información del Cliente -->
+                        <div class="tab-pane fade show active" id="clienteTab">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Nombre del Cliente</label>
+                                    <input type="text" class="form-control form-control-custom" id="newClientName" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Teléfono</label>
+                                    <input type="tel" class="form-control form-control-custom" id="newClientPhone" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Correo Electrónico</label>
+                                    <input type="email" class="form-control form-control-custom" id="newClientEmail" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Dirección</label>
+                                    <input type="text" class="form-control form-control-custom" id="newClientAddress">
+                                </div>
+                                <div class="col-12 text-end">
+                                    <button class="btn btn-primary btn-custom" onclick="nextTab('equipoTab')">
+                                        Siguiente <i class="fas fa-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información del Equipo -->
+                        <div class="tab-pane fade" id="equipoTab">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Número de Serie</label>
+                                    <input type="text" class="form-control form-control-custom" id="newSerialNumber" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Marca</label>
+                                    <input type="text" class="form-control form-control-custom" id="newBrand" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Modelo</label>
+                                    <input type="text" class="form-control form-control-custom" id="newModel" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Contraseña del Equipo</label>
+                                    <input type="text" class="form-control form-control-custom" id="newPassword">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Fecha de Ingreso</label>
+                                    <input type="datetime-local" class="form-control form-control-custom" id="newEntryDate" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Fecha Est. Entrega</label>
+                                    <input type="datetime-local" class="form-control form-control-custom" id="newEstimatedDate" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Técnico Asignado</label>
+                                    <select class="form-select form-control-custom" id="newTechnician" required>
+                                        <option value="">Seleccionar técnico...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Costo Estimado</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control form-control-custom" id="newEstimatedCost" required>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Descripción del Problema</label>
+                                    <textarea class="form-control form-control-custom" id="newProblemDescription" rows="3" required></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Estado Inicial del Equipo</label>
+                                    <textarea class="form-control form-control-custom" id="newInitialState" rows="3" required></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Condiciones Físicas</label>
+                                    <textarea class="form-control form-control-custom" id="newPhysicalConditions" rows="3" required></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary btn-custom" onclick="saveNewSupport()">Guardar Registro</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Soporte -->
+    <div class="modal fade" id="editSupportModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>Editar Soporte #<span id="editSupportId"></span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item">
+                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#editClienteTab">
+                                <i class="fas fa-user me-2"></i>Cliente
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#editEquipoTab">
+                                <i class="fas fa-laptop me-2"></i>Equipo
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content mt-3">
+                        <!-- Información del Cliente -->
+                        <div class="tab-pane fade show active" id="editClienteTab">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Nombre del Cliente</label>
+                                    <input type="text" class="form-control form-control-custom" id="editClientName" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Teléfono</label>
+                                    <input type="tel" class="form-control form-control-custom" id="editClientPhone" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Correo Electrónico</label>
+                                    <input type="email" class="form-control form-control-custom" id="editClientEmail" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Dirección</label>
+                                    <input type="text" class="form-control form-control-custom" id="editClientAddress">
+                                </div>
+                                <div class="col-12 text-end">
+                                    <button class="btn btn-primary btn-custom" onclick="nextTab('editEquipoTab')">
+                                        Siguiente <i class="fas fa-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información del Equipo -->
+                        <div class="tab-pane fade" id="editEquipoTab">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Número de Serie</label>
+                                    <input type="text" class="form-control form-control-custom" id="editSerialNumber" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Marca del Equipo</label>
+                                    <input type="text" class="form-control form-control-custom" id="editBrand" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Modelo</label>
+                                    <input type="text" class="form-control form-control-custom" id="editModel" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Fecha de Ingreso</label>
+                                    <input type="datetime-local" class="form-control form-control-custom" id="editEntryDate" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Fecha Estimada de Entrega</label>
+                                    <input type="datetime-local" class="form-control form-control-custom" id="editEstimatedDate" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Contraseña de Usuario</label>
+                                    <input type="text" class="form-control form-control-custom" id="editPassword">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Costo Estimado</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control form-control-custom" id="editEstimatedCost" required>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Descripción del Problema</label>
+                                    <textarea class="form-control form-control-custom" id="editProblemDescription" rows="3" required></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Estado Inicial del Equipo</label>
+                                    <textarea class="form-control form-control-custom" id="editInitialState" rows="3" required></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Condiciones Físicas</label>
+                                    <textarea class="form-control form-control-custom" id="editPhysicalConditions" rows="3" required></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary btn-custom" onclick="saveEditSupport()">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Reporte de Servicio -->
+    <div class="modal fade" id="reportModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-file-pdf me-2"></i>Reporte de Servicio #ST001
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="reportContent">
+                        <!-- Encabezado del Reporte -->
+                        <div class="text-center mb-4">
+                            <h4 class="mb-1">TechSupport Pro</h4>
+                            <p class="text-muted mb-1">Reporte de Servicio Técnico</p>
+                            <p class="text-muted mb-0">Fecha: <span id="reportDate"></span></p>
+                        </div>
+
+                        <!-- Información Principal -->
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <div class="border rounded p-3">
+                                    <h6 class="border-bottom pb-2">Información del Cliente</h6>
+                                    <table class="table table-sm table-borderless mb-0">
+                                        <tr>
+                                            <td class="text-muted" width="40%">Nombre:</td>
+                                            <td>Ana Martínez</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Teléfono:</td>
+                                            <td>+1234567890</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Correo:</td>
+                                            <td>ana@email.com</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Dirección:</td>
+                                            <td>Av. Principal #123, Ciudad</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="border rounded p-3">
+                                    <h6 class="border-bottom pb-2">Detalles del Servicio</h6>
+                                    <table class="table table-sm table-borderless mb-0">
+                                        <tr>
+                                            <td class="text-muted" width="40%">Orden #:</td>
+                                            <td>ST001</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Fecha Ingreso:</td>
+                                            <td>20/03/2024 09:30 AM</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Estado:</td>
+                                            <td><span class="status-badge status-en-proceso">En Proceso</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Técnico:</td>
+                                            <td>Luis Técnico</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Detalles del Equipo -->
+                        <div class="border rounded p-3 mb-4">
+                            <h6 class="border-bottom pb-2">Equipo</h6>
+                            <div class="row">
+                                <div class="col-3">
+                                    <p class="text-muted mb-1">Marca</p>
+                                    <p class="mb-3">HP</p>
+                                </div>
+                                <div class="col-3">
+                                    <p class="text-muted mb-1">Modelo</p>
+                                    <p class="mb-3">Pavilion 15-dk1056wm</p>
+                                </div>
+                                <div class="col-3">
+                                    <p class="text-muted mb-1">Serie</p>
+                                    <p class="mb-3">5CD9876543</p>
+                                </div>
+                                <div class="col-3">
+                                    <p class="text-muted mb-1">Estado</p>
+                                    <p class="mb-3">En Reparación</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Diagnóstico y Servicio -->
+                        <div class="border rounded p-3 mb-4">
+                            <h6 class="border-bottom pb-2">Diagnóstico y Servicio</h6>
+                            <div class="mb-3">
+                                <p class="text-muted mb-1">Problema Reportado</p>
+                                <p>El equipo presenta problemas de sobrecalentamiento y apagados repentinos durante el uso. El ventilador hace ruidos extraños cuando está en funcionamiento.</p>
+                            </div>
+                            <div class="mb-3">
+                                <p class="text-muted mb-1">Estado Inicial</p>
+                                <ul class="mb-0">
+                                    <li>Equipo enciende normalmente</li>
+                                    <li>Ventilador con ruido anormal</li>
+                                    <li>Temperatura elevada en uso</li>
+                                    <li>Sin daños físicos visibles</li>
+                                </ul>
+                            </div>
+                            <div class="mb-0">
+                                <p class="text-muted mb-1">Condiciones Físicas</p>
+                                <ul class="mb-0">
+                                    <li>Carcasa en buen estado</li>
+                                    <li>Pantalla sin rayones</li>
+                                    <li>Teclado completo y funcional</li>
+                                    <li>Batería original</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Historial de Servicio -->
+                        <div class="border rounded p-3 mb-4">
+                            <h6 class="border-bottom pb-2">Historial de Servicio</h6>
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Actividad</th>
+                                        <th>Responsable</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>20/03/2024 09:30 AM</td>
+                                        <td>Recepción del equipo e inspección inicial</td>
+                                        <td>Luis Técnico</td>
+                                    </tr>
+                                    <tr>
+                                        <td>20/03/2024 10:15 AM</td>
+                                        <td>Diagnóstico - Problema en sistema de ventilación</td>
+                                        <td>Luis Técnico</td>
+                                    </tr>
+                                    <tr>
+                                        <td>20/03/2024 11:30 AM</td>
+                                        <td>Inicio de reparación - Desmontaje y limpieza</td>
+                                        <td>Luis Técnico</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Costos -->
+                        <div class="border rounded p-3">
+                            <h6 class="border-bottom pb-2">Resumen de Costos</h6>
+                            <table class="table table-sm table-borderless mb-0">
+                                <tr>
+                                    <td>Diagnóstico</td>
+                                    <td class="text-end">$30.00</td>
+                                </tr>
+                                <tr>
+                                    <td>Limpieza y mantenimiento</td>
+                                    <td class="text-end">$50.00</td>
+                                </tr>
+                                <tr>
+                                    <td>Repuestos (Ventilador)</td>
+                                    <td class="text-end">$100.00</td>
+                                </tr>
+                                <tr class="border-top">
+                                    <td><strong>Total Estimado</strong></td>
+                                    <td class="text-end"><strong>$180.00</strong></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Firmas -->
+                        <div class="row mt-5">
+                            <div class="col-6 text-center">
+                                <div class="border-top pt-2" style="width: 200px; margin: 0 auto;">
+                                    Técnico Responsable
+                                </div>
+                            </div>
+                            <div class="col-6 text-center">
+                                <div class="border-top pt-2" style="width: 200px; margin: 0 auto;">
+                                    Cliente
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary btn-custom" onclick="generatePDF()">
+                        <i class="fas fa-download me-2"></i>Descargar PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Agregar Seguimiento -->
+    <div class="modal fade" id="addTimelineModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-plus-circle me-2"></i>Agregar Seguimiento
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Título</label>
+                        <input type="text" class="form-control form-control-custom" id="timelineTitle" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea class="form-control form-control-custom" id="timelineDescription" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Estado</label>
+                        <select class="form-select form-control-custom" id="timelineStatus">
+                            <option value="primary">Recepción</option>
+                            <option value="info">Diagnóstico</option>
+                            <option value="warning">En Proceso</option>
+                            <option value="success">Completado</option>
+                            <option value="danger">Problema</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary btn-custom" onclick="saveTimelineEntry()">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Cotización -->
+    <div class="modal fade" id="quoteModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-file-invoice me-2"></i>Nueva Cotización
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <!-- Información del Cliente -->
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">Información del Cliente</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">Nombre del Cliente</label>
+                                        <input type="text" class="form-control form-control-custom" id="quoteClientName" readonly>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Teléfono</label>
+                                        <input type="tel" class="form-control form-control-custom" id="quoteClientPhone" readonly>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Correo Electrónico</label>
+                                        <input type="email" class="form-control form-control-custom" id="quoteClientEmail" readonly>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Dirección</label>
+                                        <input type="text" class="form-control form-control-custom" id="quoteClientAddress" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información del Equipo -->
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">Información del Equipo</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">Marca</label>
+                                        <input type="text" class="form-control form-control-custom" id="quoteEquipmentBrand" readonly>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Modelo</label>
+                                        <input type="text" class="form-control form-control-custom" id="quoteEquipmentModel" readonly>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Número de Serie</label>
+                                        <input type="text" class="form-control form-control-custom" id="quoteEquipmentSerial" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Detalles de la Cotización -->
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">Detalles de la Cotización</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table" id="quoteItemsTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Descripción</th>
+                                                    <th>Cantidad</th>
+                                                    <th>Precio Unit.</th>
+                                                    <th>Subtotal</th>
+                                                    <th>Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Los items se agregarán dinámicamente -->
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="5">
+                                                        <button class="btn btn-sm btn-outline-primary" onclick="addQuoteItem()">
+                                                            <i class="fas fa-plus me-1"></i>Agregar Item
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Notas Adicionales</label>
+                                                <textarea class="form-control form-control-custom" id="quoteNotes" rows="3"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="card bg-light">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between mb-2">
+                                                        <span>Subtotal:</span>
+                                                        <span id="quoteSubtotal">$0.00</span>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between mb-2">
+                                                        <span>IVA (16%):</span>
+                                                        <span id="quoteTax">$0.00</span>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between fw-bold">
+                                                        <span>Total:</span>
+                                                        <span id="quoteTotal">$0.00</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary btn-custom" onclick="saveQuote()">
+                        <i class="fas fa-save me-2"></i>Guardar Cotización
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Factura -->
+    <div class="modal fade" id="invoiceModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-file-invoice-dollar me-2"></i>Nueva Factura
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <!-- Información de la Factura -->
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">Información de la Factura</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Número de Factura</label>
+                                                <input type="text" class="form-control form-control-custom" id="invoiceNumber" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Fecha de Emisión</label>
+                                                <input type="date" class="form-control form-control-custom" id="invoiceDate">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información del Cliente -->
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">Información del Cliente</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">Nombre del Cliente</label>
+                                        <input type="text" class="form-control form-control-custom" id="invoiceClientName" readonly>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Teléfono</label>
+                                        <input type="tel" class="form-control form-control-custom" id="invoiceClientPhone" readonly>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Correo Electrónico</label>
+                                        <input type="email" class="form-control form-control-custom" id="invoiceClientEmail" readonly>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Dirección</label>
+                                        <input type="text" class="form-control form-control-custom" id="invoiceClientAddress" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información del Equipo -->
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">Información del Equipo</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">Marca</label>
+                                        <input type="text" class="form-control form-control-custom" id="invoiceEquipmentBrand" readonly>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Modelo</label>
+                                        <input type="text" class="form-control form-control-custom" id="invoiceEquipmentModel" readonly>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Número de Serie</label>
+                                        <input type="text" class="form-control form-control-custom" id="invoiceEquipmentSerial" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Detalles de la Factura -->
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">Detalles de la Factura</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table" id="invoiceItemsTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Descripción</th>
+                                                    <th>Cantidad</th>
+                                                    <th>Precio Unit.</th>
+                                                    <th>Subtotal</th>
+                                                    <th>Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Los items se agregarán dinámicamente -->
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="5">
+                                                        <button class="btn btn-sm btn-outline-primary" onclick="addInvoiceItem()">
+                                                            <i class="fas fa-plus me-1"></i>Agregar Item
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Método de Pago</label>
+                                                <select class="form-select form-control-custom" id="paymentMethod">
+                                                    <option value="efectivo">Efectivo</option>
+                                                    <option value="tarjeta">Tarjeta de Crédito/Débito</option>
+                                                    <option value="transferencia">Transferencia Bancaria</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Notas Adicionales</label>
+                                                <textarea class="form-control form-control-custom" id="invoiceNotes" rows="3"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="card bg-light">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between mb-2">
+                                                        <span>Subtotal:</span>
+                                                        <span id="invoiceSubtotal">$0.00</span>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between mb-2">
+                                                        <span>IVA (16%):</span>
+                                                        <span id="invoiceTax">$0.00</span>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between fw-bold">
+                                                        <span>Total:</span>
+                                                        <span id="invoiceTotal">$0.00</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary btn-custom" onclick="saveInvoice()">
+                        <i class="fas fa-save me-2"></i>Guardar Factura
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- html2pdf.js para generar PDFs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script type="module">
+        import { auth, supportOrdersApi, clientsApi } from './js/supabase.js';
+        
+        // Proteger la página
+        await requireRole(['admin', 'recepcion', 'tecnico'], '/unauthorized.html');
+
+        // Variables globales
+        let currentUser = null;
+
+        // Inicializar la página
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // Obtener usuario actual
+                currentUser = await auth.getCurrentUser();
+                
+                // Cargar técnicos en el select
+                await loadTechnicians();
+                
+                // Establecer fecha actual en los campos de fecha
+                const now = new Date();
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                
+                document.getElementById('newEntryDate').value = now.toISOString().slice(0, 16);
+                document.getElementById('newEstimatedDate').value = tomorrow.toISOString().slice(0, 16);
+                
+                // Cargar órdenes existentes
+                await loadSupportOrders();
+            } catch (error) {
+                console.error('Error al inicializar:', error);
+                showNotification('Error al cargar los datos iniciales', 'error');
+            }
+        });
+
+        // Función para cargar técnicos
+        async function loadTechnicians() {
+            try {
+                const { data: profiles } = await supabase
+                    .from('profiles')
+                    .select('id, full_name')
+                    .eq('role', 'tecnico');
+
+                const select = document.getElementById('newTechnician');
+                select.innerHTML = '<option value="">Seleccionar técnico...</option>';
+                
+                profiles.forEach(profile => {
+                    const option = document.createElement('option');
+                    option.value = profile.id;
+                    option.textContent = profile.full_name;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error al cargar técnicos:', error);
+                showNotification('Error al cargar la lista de técnicos', 'error');
+            }
+        }
+
+        // Función para guardar nuevo soporte
+        window.saveNewSupport = async function() {
+            try {
+                // 1. Crear o actualizar cliente
+                const clientData = {
+                    name: document.getElementById('newClientName').value,
+                    phone: document.getElementById('newClientPhone').value,
+                    email: document.getElementById('newClientEmail').value,
+                    address: document.getElementById('newClientAddress').value
+                };
+
+                // Buscar si el cliente ya existe
+                const { data: existingClients } = await supabase
+                    .from('clients')
+                    .select('id')
+                    .eq('phone', clientData.phone)
+                    .limit(1);
+
+                let clientId;
+                if (existingClients && existingClients.length > 0) {
+                    // Actualizar cliente existente
+                    const { data: updatedClient } = await supabase
+                        .from('clients')
+                        .update(clientData)
+                        .eq('id', existingClients[0].id)
+                        .select()
+                        .single();
+                    clientId = updatedClient.id;
+                } else {
+                    // Crear nuevo cliente
+                    const { data: newClient } = await supabase
+                        .from('clients')
+                        .insert([clientData])
+                        .select()
+                        .single();
+                    clientId = newClient.id;
+                }
+
+                // 2. Crear orden de soporte
+                const supportData = {
+                    client_id: clientId,
+                    technician_id: document.getElementById('newTechnician').value,
+                    serial_number: document.getElementById('newSerialNumber').value,
+                    brand: document.getElementById('newBrand').value,
+                    model: document.getElementById('newModel').value,
+                    problem_description: document.getElementById('newProblemDescription').value,
+                    initial_state: document.getElementById('newInitialState').value,
+                    physical_conditions: document.getElementById('newPhysicalConditions').value,
+                    estimated_cost: parseFloat(document.getElementById('newEstimatedCost').value),
+                    status: 'pendiente',
+                    entry_date: new Date(document.getElementById('newEntryDate').value).toISOString(),
+                    estimated_delivery_date: new Date(document.getElementById('newEstimatedDate').value).toISOString(),
+                    user_password: document.getElementById('newPassword').value
+                };
+
+                const { data: newOrder } = await supportOrdersApi.create(supportData);
+
+                // 3. Crear entrada inicial en la línea de tiempo
+                await supportOrdersApi.addTimelineEntry({
+                    support_order_id: newOrder.id,
+                    title: 'Recepción del equipo',
+                    description: 'Se ha registrado el ingreso del equipo para servicio técnico.',
+                    status: 'recepcion',
+                    created_by: currentUser.id
+                });
+
+                // 4. Cerrar modal y actualizar lista
+                const modal = bootstrap.Modal.getInstance(document.getElementById('newSupportModal'));
+                modal.hide();
+
+                // 5. Limpiar formulario
+                document.getElementById('newSupportModal').querySelector('form').reset();
+
+                // 6. Recargar lista de órdenes
+                await loadSupportOrders();
+
+                showNotification('Orden de servicio creada exitosamente', 'success');
+            } catch (error) {
+                console.error('Error al guardar:', error);
+                showNotification('Error al guardar la orden de servicio', 'error');
+            }
+        };
+
+        // Función para cargar órdenes de soporte
+        async function loadSupportOrders() {
+            try {
+                const orders = await supportOrdersApi.getAll();
+                const tbody = document.querySelector('#supportTable tbody');
+                tbody.innerHTML = '';
+
+                orders.forEach(order => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>#${order.id.slice(0, 8)}</td>
+                        <td>${order.client.name}</td>
+                        <td>
+                            <small class="d-block">📱 ${order.client.phone}</small>
+                            <small class="d-block">📧 ${order.client.email}</small>
+                        </td>
+                        <td>${new Date(order.entry_date).toLocaleDateString()}</td>
+                        <td>$${order.estimated_cost}</td>
+                        <td><span class="status-badge status-${order.status}">${formatStatus(order.status)}</span></td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-info btn-custom" onclick="showOrderView('${order.id}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-warning btn-custom" onclick="editSupport('${order.id}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-danger btn-custom" onclick="confirmDelete('${order.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error('Error al cargar órdenes:', error);
+                showNotification('Error al cargar la lista de órdenes', 'error');
+            }
+        }
+
+        // Función para formatear el estado
+        function formatStatus(status) {
+            const statusMap = {
+                'pendiente': 'Pendiente',
+                'en_proceso': 'En Proceso',
+                'completado': 'Completado',
+                'cancelado': 'Cancelado'
+            };
+            return statusMap[status] || status;
+        }
+
+        // Función para mostrar notificaciones
+        function showNotification(message, type = 'info') {
+            // Implementar sistema de notificaciones
+            alert(message);
+        }
+    </script>
+    // Agregar este script en todos los archivos HTML
+    <script>
+    // Función para manejar la navegación activa
+    function setActiveNavItem() {
+        // Obtener el nombre del archivo actual
+        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        
+        // Remover la clase active de todos los enlaces
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+        });
+        
+        // Agregar la clase active al enlace correspondiente
+        let navId = '';
+        switch(currentPage) {
+            case 'index.html':
+                navId = 'nav-dashboard';
+                break;
+            case 'soporte.html':
+                navId = 'nav-soporte';
+                break;
+            case 'cotizaciones.html':
+                navId = 'nav-cotizaciones';
+                break;
+            case 'facturas.html':
+                navId = 'nav-facturas';
+                break;
+            case 'inventario.html':
+                navId = 'nav-inventario';
+                break;
+            case 'directorio.html':
+                navId = 'nav-directorio';
+                break;
+            case 'ajustes.html':
+                navId = 'nav-ajustes';
+                break;
+        }
+        
+        const activeLink = document.getElementById(navId);
+        if (activeLink) {
+            activeLink.classList.add('active');
+        }
+    }
+    
+    // Agregar estos estilos para el menú
+    document.head.insertAdjacentHTML('beforeend', `
+        <style>
+            .sidebar {
+                background-color: #2c3e50;
+                min-height: 100vh;
+                position: fixed;
+                top: 0;
+                left: 0;
+                z-index: 1000;
+                width: 250px;
+            }
+            
+            .nav-link {
+                color: rgba(255,255,255,0.7);
+                padding: 0.8rem 1rem;
+                margin-bottom: 0.2rem;
+                border-radius: 0.3rem;
+                transition: all 0.3s ease;
+            }
+            
+            .nav-link:hover {
+                color: white;
+                background-color: rgba(255,255,255,0.1);
+                transform: translateX(5px);
+            }
+            
+            .nav-link.active {
+                color: white;
+                background-color: rgba(255,255,255,0.2);
+            }
+            
+            .nav-link i {
+                width: 20px;
+                margin-right: 10px;
+                text-align: center;
+            }
+            
+            /* Ajuste para el contenido principal */
+            .main-content {
+                margin-left: 250px;
+                width: calc(100% - 250px);
+                transition: margin-left 0.3s;
+                position: relative;
+                z-index: 1;
+                background: #f8f9fa;
+                min-height: 100vh;
+            }
+        </style>
+    `);
+    
+    // Ejecutar cuando el DOM esté cargado
+    document.addEventListener('DOMContentLoaded', setActiveNavItem);
+    
+    // Manejar el estado del tema oscuro
+    function loadThemePreference() {
+        const darkMode = localStorage.getItem('darkMode') === 'true';
+        document.body.classList.toggle('dark-mode', darkMode);
+    }
+    
+    // Cargar preferencia de tema al inicio
+    loadThemePreference();
+    </script>
+
+    <style>
+    .image-container {
+        position: relative;
+        height: 200px;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .image-container:hover img {
+        transform: scale(1.05);
+    }
+
+    .image-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .image-container:hover .image-overlay {
+        opacity: 1;
+    }
+
+    .image-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .image-actions button {
+        background: white;
+        border: none;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+    }
+
+    .image-actions button:hover {
+        transform: scale(1.1);
+    }
+
+    .image-preview-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.9);
+        z-index: 1050;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .image-preview-modal img {
+        max-width: 90%;
+        max-height: 90vh;
+        object-fit: contain;
+    }
+
+    .image-preview-close {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        color: white;
+        font-size: 30px;
+        cursor: pointer;
+    }
+
+    .search-container {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 10px;
+    }
+
+    .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+
+    .highlight {
+        background-color: #fff3cd;
+        padding: 2px;
+        border-radius: 3px;
+    }
+
+    .search-results-container {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+        display: none;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .search-result-item {
+        padding: 10px 15px;
+        border-bottom: 1px solid #eee;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .search-result-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .search-result-item:last-child {
+        border-bottom: none;
+    }
+
+    .search-result-name {
+        font-weight: 500;
+        color: #333;
+    }
+
+    .search-result-details {
+        font-size: 0.85em;
+        color: #666;
+    }
+    </style>
+
+    <script>
+        // Función para buscar clientes existentes
+        let searchTimeout;
+        document.getElementById('searchExistingClient').addEventListener('input', function(e) {
+            clearTimeout(searchTimeout);
+            const searchTerm = e.target.value.trim().toLowerCase();
+            const resultsContainer = document.getElementById('clientSearchResults');
+
+            if (searchTerm.length < 2) {
+                resultsContainer.style.display = 'none';
+                return;
+            }
+
+            searchTimeout = setTimeout(() => {
+                // Obtener clientes del localStorage (directorio)
+                const clients = JSON.parse(localStorage.getItem('clients')) || [];
+                
+                // Filtrar clientes que coincidan con el término de búsqueda
+                const matchingClients = clients.filter(client => 
+                    client.name.toLowerCase().includes(searchTerm) ||
+                    client.phone.toLowerCase().includes(searchTerm) ||
+                    client.email.toLowerCase().includes(searchTerm)
+                );
+
+                // Mostrar resultados
+                if (matchingClients.length > 0) {
+                    resultsContainer.innerHTML = matchingClients.map(client => `
+                        <div class="search-result-item" onclick="selectExistingClient('${client.id}')">
+                            <div class="search-result-name">${client.name}</div>
+                            <div class="search-result-details">
+                                📱 ${client.phone} | 📧 ${client.email}
+                            </div>
+                        </div>
+                    `).join('');
+                    resultsContainer.style.display = 'block';
+                } else {
+                    resultsContainer.innerHTML = `
+                        <div class="search-result-item">
+                            <div class="search-result-name">No se encontraron resultados</div>
+                        </div>
+                    `;
+                    resultsContainer.style.display = 'block';
+                }
+            }, 300);
+        });
+
+        // Función para seleccionar un cliente existente
+        function selectExistingClient(clientId) {
+            const clients = JSON.parse(localStorage.getItem('clients')) || [];
+            const selectedClient = clients.find(c => c.id === clientId);
+            
+            if (selectedClient) {
+                // Llenar los campos del formulario con los datos del cliente
+                document.getElementById('newClientName').value = selectedClient.name;
+                document.getElementById('newClientPhone').value = selectedClient.phone;
+                document.getElementById('newClientEmail').value = selectedClient.email;
+                document.getElementById('newClientAddress').value = selectedClient.address;
+                
+                // Ocultar resultados de búsqueda
+                document.getElementById('clientSearchResults').style.display = 'none';
+                document.getElementById('searchExistingClient').value = '';
+            }
+        }
+
+        // Cerrar resultados de búsqueda al hacer clic fuera
+        document.addEventListener('click', function(e) {
+            const resultsContainer = document.getElementById('clientSearchResults');
+            const searchInput = document.getElementById('searchExistingClient');
+            
+            if (!resultsContainer.contains(e.target) && e.target !== searchInput) {
+                resultsContainer.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechSupport Pro | Iniciar Sesión</title>
+    
+    <!-- Bootstrap 5 + Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header i {
+            font-size: 3rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e9ecef;
+            margin-bottom: 1rem;
+        }
+
+        .form-control:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+
+        .btn-login {
+            background-color: #3498db;
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-weight: 500;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .btn-login:hover {
+            background-color: #2980b9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(52, 152, 219, 0.2);
+        }
+
+        .alert {
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <i class="fas fa-tools"></i>
+                <h4>TechSupport Pro</h4>
+                <p class="text-muted">Iniciar Sesión</p>
+            </div>
+
+            <div class="alert alert-danger" id="errorAlert" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <span id="errorMessage"></span>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="mb-3">
+                    <label class="form-label">Correo Electrónico</label>
+                    <input type="email" 
+                           class="form-control" 
+                           id="email" 
+                           required 
+                           autocomplete="email">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Contraseña</label>
+                    <input type="password" 
+                           class="form-control" 
+                           id="password" 
+                           required 
+                           autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn btn-primary btn-login">
+                    <i class="fas fa-sign-in-alt me-2"></i>Ingresar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    
+    <!-- Custom JS -->
+    <script type="module">
+        import { auth } from './js/supabase.js';
+
+        window.handleLogin = async (event) => {
+            event.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorAlert = document.getElementById('errorAlert');
+            const errorMessage = document.getElementById('errorMessage');
+
+            try {
+                const { user } = await auth.signIn(email, password);
+                if (user) {
+                    // Guardar el token en localStorage
+                    localStorage.setItem('user', JSON.stringify(user));
+                    // Redirigir al dashboard
+                    window.location.href = 'index.html';
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Credenciales inválidas. Por favor, intente nuevamente.';
+                errorAlert.style.display = 'block';
+            }
+        };
+
+        // Verificar si ya hay una sesión activa
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const user = await auth.getCurrentUser();
+                if (user) {
+                    window.location.href = 'index.html';
+                }
+            } catch (error) {
+                console.error('Error al verificar sesión:', error);
+            }
+        });
+    </script>
+</body>
+</html> 

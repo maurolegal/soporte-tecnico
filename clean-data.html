@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Limpiar Datos - TechSupport Pro</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    
+    <style>
+        body {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .clean-container {
+            max-width: 600px;
+            width: 90%;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        .console {
+            background: #1e1e1e;
+            color: #fff;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+        }
+        .console p {
+            margin: 0;
+            padding: 2px 0;
+        }
+        .success {
+            color: #28a745;
+        }
+        .error {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="clean-container">
+        <h3 class="text-center mb-4">Limpiar Datos de TechSupport Pro</h3>
+        <div class="alert alert-warning">
+            <strong>¡Advertencia!</strong> Esta acción eliminará todos los datos de ejemplo del sistema.
+            Esta operación no se puede deshacer.
+        </div>
+        <button id="cleanBtn" class="btn btn-danger w-100 mb-3">
+            Limpiar Datos
+        </button>
+        <div class="console" id="console"></div>
+    </div>
+
+    <script type="module">
+        import { auth, requireRole } from './js/supabase.js';
+        
+        // Proteger la página solo para administradores
+        await requireRole(['admin'], '/unauthorized.html');
+
+        const consoleDiv = document.getElementById('console');
+        const cleanBtn = document.getElementById('cleanBtn');
+
+        // Sobrescribir console.log para mostrar en nuestra consola
+        const originalLog = console.log;
+        const originalError = console.error;
+
+        console.log = function(message) {
+            originalLog.apply(console, arguments);
+            const p = document.createElement('p');
+            p.textContent = message;
+            consoleDiv.appendChild(p);
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        };
+
+        console.error = function(message) {
+            originalError.apply(console, arguments);
+            const p = document.createElement('p');
+            p.textContent = message;
+            p.classList.add('error');
+            consoleDiv.appendChild(p);
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        };
+
+        cleanBtn.addEventListener('click', async () => {
+            if (!confirm('¿Estás seguro de que deseas eliminar todos los datos?')) {
+                return;
+            }
+
+            cleanBtn.disabled = true;
+            try {
+                // Importar y ejecutar el script de limpieza
+                await import('./js/clean-data.js');
+                console.log('Proceso de limpieza iniciado...');
+            } catch (error) {
+                console.error('Error al ejecutar la limpieza:', error.message);
+            } finally {
+                cleanBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html> 
