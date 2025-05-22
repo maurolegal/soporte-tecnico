@@ -1,7 +1,7 @@
 -- Habilitar la extensión uuid-ossp si no está habilitada
 create extension if not exists "uuid-ossp";
 
--- Create users table (extends Supabase auth.users)
+-- Create users table (extends supabase auth.users)
 create table public.profiles (
     id uuid references auth.users on delete cascade,
     full_name text,

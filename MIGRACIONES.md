@@ -1,10 +1,10 @@
-# Instrucciones para Ejecutar Migraciones en Supabase
+# Instrucciones para Ejecutar Migraciones en supabase
 
-Este documento explica cómo actualizar las tablas de la base de datos en Supabase con las migraciones SQL necesarias para el proyecto TechSupport Pro.
+Este documento explica cómo actualizar las tablas de la base de datos en supabase con las migraciones SQL necesarias para el proyecto TechSupport Pro.
 
-## Opción 1: A través del Panel de SQL de Supabase (Recomendado)
+## Opción 1: A través del Panel de SQL de supabase (Recomendado)
 
-1. **Accede al Panel de Supabase**:
+1. **Accede al Panel de supabase**:
    - Ingresa a [https://app.supabase.io/](https://app.supabase.io/)
    - Inicia sesión con tus credenciales
    - Selecciona tu proyecto (`TechSupport Pro`)
@@ -16,7 +16,7 @@ Este documento explica cómo actualizar las tablas de la base de datos en Supaba
 3. **Ejecuta el archivo combinado de migraciones**:
    - Abre el archivo `db/supabase_migrations_combined.sql` de este proyecto
    - Copia todo su contenido
-   - Pégalo en la ventana del Editor SQL de Supabase
+   - Pégalo en la ventana del Editor SQL de supabase
    - Haz clic en "Run" o "Execute" para ejecutar todas las migraciones
 
 4. **Verifica la ejecución**:
@@ -39,7 +39,7 @@ Si prefieres ejecutar las migraciones desde tu entorno local, puedes usar el scr
 
 3. **Verifica la ejecución**:
    - Revisa los mensajes de salida en la consola para confirmar que las migraciones se ejecutaron correctamente
-   - Verifica en el panel de Supabase que las tablas y columnas se hayan creado correctamente
+   - Verifica en el panel de supabase que las tablas y columnas se hayan creado correctamente
 
 ## Notas importantes
 

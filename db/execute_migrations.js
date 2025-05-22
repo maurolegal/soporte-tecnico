@@ -1,9 +1,9 @@
-// Script para ejecutar migraciones SQL en Supabase
+// Script para ejecutar migraciones SQL en supabase
 const fs = require('fs');
 const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
 
-// Configuración de Supabase (misma que la del archivo js/supabase.js)
+// Configuración de supabase (misma que la del archivo js/supabase.js)
 const supabaseUrl = 'https://stddbzpxdqxuzhhqywtc.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0ZGRienB4ZHF4dXpoaHF5d3RjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5MTgzOTAsImV4cCI6MjA2MzQ5NDM5MH0.ZLrpXpw5ATu0ymcXgWMBfYiCLsoDxULRYRn_31NMzTE';
 const supabase = createClient(supabaseUrl, supabaseKey);

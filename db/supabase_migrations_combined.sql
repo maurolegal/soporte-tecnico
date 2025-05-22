@@ -1,4 +1,4 @@
--- Archivo combinado de todas las migraciones SQL para ejecutar en Supabase
+-- Archivo combinado de todas las migraciones SQL para ejecutar en supabase
 
 ------------------------------------------------------------------------------
 -- Migración: add_service_dates.sql
